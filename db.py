@@ -22,15 +22,18 @@ def create_table(con, table_sql):
         print("Error: ", e)
 
 
-def insert_dummy_location_data(con, row):
+def insert_row(con, table, row):
     try:
-        sql = """INSERT INTO locations(id,city,address) VALUES(?,?,?) """
+        if 'locations' in table:
+            sql = "INSERT INTO " + table + "(id,city,address) VALUES(?,?,?) "
+        elif 'bookings' in table:
+            sql = "INSERT INTO " + table + "(userId,city,vehicleType, length) VALUES(?,?,?,?) "
 
         ex = con.cursor()
         ex.execute(sql, row)
         con.commit()
+        print("Row inserted")
         return ex.lastrowid
-        print("Data inserted.")
     except Error as e:
         print("Error: ", e)
 
@@ -42,11 +45,19 @@ def main():
                         address text NOT NULL
                         );"""
 
+    booking_table = """CREATE TABLE IF NOT EXISTS bookings (
+                        userId integer PRIMARY KEY,
+                        city text NOT NULL,
+                        vehicleType text NOT NULL,
+                        length text NOT NULL
+                        );"""
+
     con = db_connection(r"sqlite/db/database.db")
     create_table(con, location_table)
+    create_table(con, booking_table)
 
-    row = ('lim', 'Limerick', 'University of Limerick, Castletroy, Limerick')
-    insert_dummy_location_data(con, row)
+    row = ('cork', 'Cork', 'University College Cork, Cork City')
+    insert_row(con, "locations", row)
 
 
 if __name__ == '__main__':
