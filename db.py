@@ -37,6 +37,35 @@ def insert_row(con, table, row):
     except Error as e:
         print("Error: ", e)
 
+def remove_row(con, table, row):
+    try:
+        if 'locations' in table:
+            pass
+        elif 'bookings' in table:
+            pass
+
+        ex = con.cursor()
+        ex.execute(sql, row)
+        con.commit()
+        print("Row removed")
+        return ex.lastrowid
+    except Error as e:
+        print("Error: ", e)
+
+def update_row(con, table, row):
+    try:
+        if 'locations' in table:
+            pass
+        elif 'bookings' in table:
+            sql = "UPDATE " + table + " SET city = ?, vechicleType = ?, length = ? WHERE userId = ?"
+
+        ex = con.cursor()
+        ex.execute(sql, row)
+        con.commit()
+        print("Row updated")
+        return ex.lastrowid
+    except Error as e:
+        print("Error: ", e)
 
 def main():
     location_table = """CREATE TABLE IF NOT EXISTS locations (
