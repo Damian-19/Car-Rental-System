@@ -27,7 +27,7 @@ def insert_row(con, table, row):
         if 'locations' in table:
             sql = "INSERT INTO " + table + "(id,city,address) VALUES(?,?,?) "
         elif 'bookings' in table:
-            sql = "INSERT INTO " + table + "(userId,city,vehicleType, length) VALUES(?,?,?,?) "
+            sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -36,6 +36,7 @@ def insert_row(con, table, row):
         return ex.lastrowid
     except Error as e:
         print("Error: ", e)
+
 
 def remove_row(con, table, row):
     try:
@@ -52,12 +53,13 @@ def remove_row(con, table, row):
     except Error as e:
         print("Error: ", e)
 
+
 def update_row(con, table, row):
     try:
         if 'locations' in table:
             pass
         elif 'bookings' in table:
-            sql = "UPDATE " + table + " SET city = ?, vechicleType = ?, length = ? WHERE userId = ?"
+            sql = "UPDATE " + table + " SET city = ?, vechicleType = ?, startDate = ?, endDate = ? WHERE userId = ?"
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -66,6 +68,7 @@ def update_row(con, table, row):
         return ex.lastrowid
     except Error as e:
         print("Error: ", e)
+
 
 def main():
     location_table = """CREATE TABLE IF NOT EXISTS locations (
@@ -78,7 +81,8 @@ def main():
                         userId integer PRIMARY KEY,
                         city text NOT NULL,
                         vehicleType text NOT NULL,
-                        length text NOT NULL
+                        startDate text NOT NULL,
+                        endDate text NOT NULL
                         );"""
 
     con = db_connection(r"sqlite/db/database.db")

@@ -16,7 +16,7 @@ def db_connection(db):
 
 def main():
     con = db_connection(r"sqlite/db/database.db")
-    row = '145', 'Cork', 'Van', '2 days'
+    row = '145', 'Cork', 'Van', '26/10/2021', '03/11/2021'
     db.insert_row(con, 'bookings', row)
 
 
