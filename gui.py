@@ -83,11 +83,11 @@ button.bind('<Return>', Login)
 register_button = tk.Button(frame, text="Sign Up")
 register_button.grid(column=0, row=5, columnspan=2, sticky="we")
 
-tabs = ttk.Notebook(home)
+"""tabs = ttk.Notebook(home)
 catalog_frame = tk.Frame(tabs)
 rent_frame = tk.Frame(tabs)
 tabs.add(catalog_frame, text="Catalog")
-tabs.add(rent_frame, text="Rent Car")
+tabs.add(rent_frame, text="Rent Car")"""
 
 root.title("CS4125")
 root.resizable(0, 0)
