@@ -28,6 +28,8 @@ def insert_row(con, table, row):
             sql = "INSERT INTO " + table + "(id,city,address) VALUES(?,?,?) "
         elif 'bookings' in table:
             sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
+        elif 'users' in table:
+            sql = "INSERT INTO " + table + "(firstName, lastName, email, phoneNumber, password) VALUES(?,?,?,?,?)"
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -100,6 +102,9 @@ def main():
 
     row = ('cork', 'Cork', 'University College Cork, Cork City')
     insert_row(con, "locations", row)
+
+    row = ('Damian', 'Larkin', 'damian@ul.ie', '12345678', 'jamma')
+    insert_row(con, "users", row)
 
 
 if __name__ == '__main__':
