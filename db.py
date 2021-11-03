@@ -29,7 +29,7 @@ def insert_row(con, table, row):
         elif 'bookings' in table:
             sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
         elif 'users' in table:
-            sql = "INSERT INTO " + table + "(firstName, lastName, email, phoneNumber, password) VALUES(?,?,?,?,?)"
+            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, password) VALUES(?,?,?,?,?,?)"
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -40,7 +40,7 @@ def insert_row(con, table, row):
         print("Error: ", e)
 
 
-def remove_row(con, table, row):
+"""def remove_row(con, table, row):
     try:
         if 'locations' in table:
             pass
@@ -53,7 +53,7 @@ def remove_row(con, table, row):
         print("Row removed")
         return ex.lastrowid
     except Error as e:
-        print("Error: ", e)
+        print("Error: ", e)"""
 
 
 def update_row(con, table, row):
@@ -88,6 +88,7 @@ def main():
 
     users_table = """CREATE TABLE IF NOT EXISTS users (
                         userId integer PRIMARY KEY AUTOINCREMENT,
+                        username text NOT NULL,
                         firstName text NOT NULL,
                         lastName text NOT NULL,
                         email text NOT NULL,
@@ -103,7 +104,7 @@ def main():
     row = ('cork', 'Cork', 'University College Cork, Cork City')
     insert_row(con, "locations", row)
 
-    row = ('Damian', 'Larkin', 'damian@ul.ie', '12345678', 'jamma')
+    row = ('NONAME', 'Damian', 'Larkin', 'damian@ul.ie', '12345678', 'jamma')
     insert_row(con, "users", row)
 
 
