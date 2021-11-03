@@ -69,7 +69,6 @@ def update_row(con, table, row):
     except Error as e:
         print("Error: ", e)
 
-
 def main():
     location_table = """CREATE TABLE IF NOT EXISTS locations (
                         id text PRIMARY KEY,
@@ -85,9 +84,19 @@ def main():
                         endDate text NOT NULL
                         );"""
 
+    users_table = """CREATE TABLE IF NOT EXISTS users (
+                        userId integer PRIMARY KEY AUTOINCREMENT,
+                        firstName text NOT NULL,
+                        lastName text NOT NULL,
+                        email text NOT NULL,
+                        phoneNumber text NOT NULL,
+                        password text NOT NULL
+                        );"""
+
     con = db_connection(r"sqlite/db/database.db")
     create_table(con, location_table)
     create_table(con, booking_table)
+    create_table(con, users_table)
 
     row = ('cork', 'Cork', 'University College Cork, Cork City')
     insert_row(con, "locations", row)
