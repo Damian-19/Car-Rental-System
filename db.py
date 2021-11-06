@@ -29,7 +29,7 @@ def insert_row(con, table, row):
         elif 'bookings' in table:
             sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
         elif 'users' in table:
-            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, password) VALUES(?,?,?,?,?,?)"
+            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, salt, hashedPassword) VALUES(?,?,?,?,?,?,?)"
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -90,10 +90,11 @@ def main():
                         userId integer PRIMARY KEY AUTOINCREMENT,
                         username text NOT NULL,
                         firstName text NOT NULL,
-                        lastName text NOT NULL,
+                        lastName text,
                         email text NOT NULL,
-                        phoneNumber text NOT NULL,
-                        password text NOT NULL
+                        phoneNumber text,
+                        salt text NOT NULL,
+                        hashedPassword text NOT NULL
                         );"""
 
     con = db_connection(r"sqlite/db/database.db")
@@ -103,10 +104,6 @@ def main():
 
     row = ('cork', 'Cork', 'University College Cork, Cork City')
     insert_row(con, "locations", row)
-
-    row = ('NONAME', 'Damian', 'Larkin', 'damian@ul.ie', '12345678', 'jamma')
-    insert_row(con, "users", row)
-
 
 if __name__ == '__main__':
     main()
