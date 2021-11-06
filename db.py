@@ -104,6 +104,10 @@ def main():
 
     row = ('cork', 'Cork', 'University College Cork, Cork City')
     insert_row(con, "locations", row)
+    row = ('limerick', 'Limerick', 'University of Limerick, Casletroy')
+    insert_row(con, "locations", row)
+    row = ('dublin', 'Dublin', 'University College Dublin, Dublin City')
+    insert_row(con, "locations", row)
 
 if __name__ == '__main__':
     main()

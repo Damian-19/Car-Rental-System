@@ -22,65 +22,65 @@ PHONENUMBER = tk.StringVar()
 
 # frames
 main_frame = tk.Frame(root).grid(column=0, row=0)
-frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
-frame.grid(column=0, row=0, sticky='nsew', padx=2, pady=2)
-frame2 = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
-frame2.grid(column=1, row=0, sticky='nsew', padx=2, pady=2)
+login_frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
+login_frame.grid(column=0, row=0, sticky='nsew', padx=2, pady=2)
+register_frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
+register_frame.grid(column=1, row=0, sticky='nsew', padx=2, pady=2)
 # ==============================LABELS=========================================
-title = tk.Label(frame, text="Login", font=('arial', 15))
+title = tk.Label(login_frame, text="Login", font=('arial', 15))
 title.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
 
-# frame 1 - login
-username_label = tk.Label(frame, text="Username")
+# login_frame 1 - login
+username_label = tk.Label(login_frame, text="Username")
 username_label.grid(column=0, row=1, padx=10, pady=10)
 
-username_input = tk.Entry(frame, textvariable=USERNAME)
+username_input = tk.Entry(login_frame, textvariable=USERNAME)
 username_input.grid(column=1, row=1, padx=10, pady=10)
 
-password_label = tk.Label(frame, text="Password")
+password_label = tk.Label(login_frame, text="Password")
 password_label.grid(column=0, row=2, padx=10, pady=10)
 
-password_input = tk.Entry(frame, textvariable=PASSWORD, show="*")
+password_input = tk.Entry(login_frame, textvariable=PASSWORD, show="*")
 password_input.grid(column=1, row=2)
 
-# frame2 - register
-title = tk.Label(frame2, text="Register", font=('arial', 15))
+# register_frame - register
+title = tk.Label(register_frame, text="Register", font=('arial', 15))
 title.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
 
-username_label = tk.Label(frame2, text="Username")
+username_label = tk.Label(register_frame, text="Username")
 username_label.grid(column=0, row=1, padx=10, pady=10)
 
-username_input = tk.Entry(frame2, textvariable=RUSERNAME)
+username_input = tk.Entry(register_frame, textvariable=RUSERNAME)
 username_input.grid(column=1, row=1, padx=5, pady=5)
 
-firstname_label = tk.Label(frame2, text="Firstname")
+firstname_label = tk.Label(register_frame, text="Firstname")
 firstname_label.grid(column=0, row=2, padx=10, pady=10)
 
-firstname_input = tk.Entry(frame2, textvariable=FIRSTNAME)
+firstname_input = tk.Entry(register_frame, textvariable=FIRSTNAME)
 firstname_input.grid(column=1, row=2)
 
-lastname_label = tk.Label(frame2, text="Lastname")
+lastname_label = tk.Label(register_frame, text="Lastname")
 lastname_label.grid(column=0, row=3, padx=10, pady=10)
 
-lastname_input = tk.Entry(frame2, textvariable=LASTNAME)
+lastname_input = tk.Entry(register_frame, textvariable=LASTNAME)
 lastname_input.grid(column=1, row=3)
 
-email_label = tk.Label(frame2, text="Email")
+email_label = tk.Label(register_frame, text="Email")
 email_label.grid(column=0, row=4, padx=10, pady=10)
 
-email_input = tk.Entry(frame2, textvariable=EMAIL)
+email_input = tk.Entry(register_frame, textvariable=EMAIL)
 email_input.grid(column=1, row=4)
 
-phonenumber_label = tk.Label(frame2, text="Phone number")
+phonenumber_label = tk.Label(register_frame, text="Phone number")
 phonenumber_label.grid(column=0, row=5, padx=10, pady=10)
 
-phonenumber_input = tk.Entry(frame2, textvariable=PHONENUMBER)
+phonenumber_input = tk.Entry(register_frame, textvariable=PHONENUMBER)
 phonenumber_input.grid(column=1, row=5)
 
-password_label = tk.Label(frame2, text="Password")
+password_label = tk.Label(register_frame, text="Password")
 password_label.grid(column=0, row=6, padx=10, pady=10)
 
-password_input = tk.Entry(frame2, textvariable=RPASSWORD, show="*")
+password_input = tk.Entry(register_frame, textvariable=RPASSWORD, show="*")
 password_input.grid(column=1, row=6)
 
 
@@ -102,15 +102,40 @@ def dashboard():
     y = (screen_height / 2) - (height / 2)
     root.resizable(0, 0)
     home.geometry("%dx%d+%d+%d" % (width, height, x, y))
-    lbl_home = tk.Label(home, text="Welcome, " + str(USERNAME.get()), font=('calibri', 20)).pack()
-    btn_back = tk.Button(home, text='Sign Out', command=Back).pack(pady=20, fill='x')
+    # retrieve users firstname
+    database()
+    cursor.execute("SELECT Firstname FROM users WHERE username = ? ", (USERNAME.get(),))
+    name = cursor.fetchone()
+    name = str(name).replace("(", "").replace(")", "").replace("'", "").replace(",", "")
+    lbl_home = tk.Label(home, text="Welcome, " + name, font=('calibri', 20)).pack()
+    create_dashboard()
+    signout_button = tk.Button(home, text='Sign Out', command=Back).pack(pady=20, fill='x')
+
+
+def create_dashboard():
+    global home
+    tabs = ttk.Notebook(home)
+    tabs.pack(expand=True)
+
+    catalog_frame = tk.Frame(tabs)
+    rent_frame = tk.Frame(tabs)
+    locations_frame = tk.Frame(tabs)
+
+    catalog_frame.pack(fill='both', expand=True)
+    rent_frame.pack(fill='both', expand=True)
+    locations_frame.pack(fill='both', expand=True)
+
+    tabs.add(catalog_frame, text="Catalog")
+    tabs.add(rent_frame, text="Rent Car")
+    tabs.add(locations_frame, text="Locations")
+
 
 
 def database():
+    # create database connection
     global conn, cursor
     conn = sqlite3.connect(r"sqlite/db/database.db")
     cursor = conn.cursor()
-    #cursor.execute("SELECT * FROM `users` WHERE `firstName` = 'admin' AND `password` = 'admin'")
 
 
 def login():
@@ -122,7 +147,7 @@ def login():
                        (USERNAME.get(),))
         salt, password = cursor.fetchone()
         print(type(salt))
-        #salt = salt.encode(encoding='UTF=8')
+        # salt = salt.encode(encoding='UTF=8')
         print(type(salt))
         print(type(password))
         try:
@@ -156,27 +181,31 @@ def register():
                     (RUSERNAME.get(), FIRSTNAME.get(), LASTNAME.get(), EMAIL.get(), PHONENUMBER.get(), salt,
                      password_hash))
                 conn.commit()
+                lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
+                RUSERNAME.set("")
+                FIRSTNAME.set("")
+                LASTNAME.set("")
+                EMAIL.set("")
+                PHONENUMBER.set("")
+                RPASSWORD.set("")
             except Error as e:
                 print("Error: ", e)
     cursor.close()
     conn.close()
 
 
-lbl_text = tk.Label(frame)
+lbl_text = tk.Label(login_frame)
 lbl_text.grid(row=3, columnspan=2)
 
-button = tk.Button(frame, text="Login", command=login)
+button = tk.Button(login_frame, text="Login", command=login)
 button.grid(column=0, row=4, columnspan=2, sticky="we", padx=10, pady=10)
-button.bind('<Return>', login())
+#button.bind('<Return>', login())
 
-register_button = tk.Button(frame2, text="Sign Up", command=register)
-register_button.grid(column=0, row=7, columnspan=2, sticky="we", padx=10, pady=10)
+lbl_register_text = tk.Label(register_frame)
+lbl_register_text.grid(row=7, columnspan=2)
 
-"""tabs = ttk.Notebook(home)
-catalog_frame = tk.Frame(tabs)
-rent_frame = tk.Frame(tabs)
-tabs.add(catalog_frame, text="Catalog")
-tabs.add(rent_frame, text="Rent Car")"""
+register_button = tk.Button(register_frame, text="Sign Up", command=register)
+register_button.grid(column=0, row=8, columnspan=2, sticky="we", padx=10, pady=10)
 
 root.title("CS4125")
 root.resizable(0, 0)
