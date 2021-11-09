@@ -29,7 +29,7 @@ def insert_row(con, table, row):
         elif 'bookings' in table:
             sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
         elif 'users' in table:
-            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, salt, hashedPassword) VALUES(?,?,?,?,?,?,?)"
+            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, points, salt, hashedPassword) VALUES(?,?,?,?,?,?,?,?)"
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -62,6 +62,8 @@ def update_row(con, table, row):
             pass
         elif 'bookings' in table:
             sql = "UPDATE " + table + " SET city = ?, vechicleType = ?, startDate = ?, endDate = ? WHERE userId = ?"
+        elif 'users' in table:
+            pass
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -70,6 +72,7 @@ def update_row(con, table, row):
         return ex.lastrowid
     except Error as e:
         print("Error: ", e)
+
 
 def main():
     location_table = """CREATE TABLE IF NOT EXISTS locations (
@@ -93,6 +96,7 @@ def main():
                         lastName text,
                         email text NOT NULL,
                         phoneNumber text,
+                        points NOT NULL,
                         salt text NOT NULL,
                         hashedPassword text NOT NULL
                         );"""

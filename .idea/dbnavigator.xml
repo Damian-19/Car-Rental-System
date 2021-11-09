@@ -2,7 +2,7 @@
 <project version="4">
   <component name="DBNavigator.Project.DataEditorManager">
     <record-view-column-sorting-type value="BY_INDEX" />
-    <value-preview-text-wrapping value="false" />
+    <value-preview-text-wrapping value="true" />
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DataExportManager">
@@ -25,32 +25,27 @@
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
     <loaded-nodes>
-      <connection connection-id="82257482-2236-4c20-8df6-3c741030b497">
+      <connection connection-id="860aa61a-3c39-4d53-aff0-b620b9d8e1ef">
         <schema name="main" object-types="table, view, constraint, index, column, dataset trigger" />
       </connection>
     </loaded-nodes>
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="82257482-2236-4c20-8df6-3c741030b497">
-      <console name="Connection" type="STANDARD" schema="main" session="Main" />
+    <connection id="860aa61a-3c39-4d53-aff0-b620b9d8e1ef">
+      <console name="Connection 1" type="STANDARD" schema="main" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
-      <object connection-id="82257482-2236-4c20-8df6-3c741030b497" object-ref="schemas/main/tables/users" />
-      <object connection-id="82257482-2236-4c20-8df6-3c741030b497" object-ref="consoles/Connection" />
-      <object connection-id="82257482-2236-4c20-8df6-3c741030b497" object-ref="schemas/main/tables/locations" />
+      <object connection-id="860aa61a-3c39-4d53-aff0-b620b9d8e1ef" object-ref="schemas/main/tables/users" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="82257482-2236-4c20-8df6-3c741030b497" />
+    <connection id="860aa61a-3c39-4d53-aff0-b620b9d8e1ef" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="82257482-2236-4c20-8df6-3c741030b497" dataset="main.users" active-filter-id="dd5d9058-e086-4ee6-9c95-310fa939b036">
-      <filter id="dd5d9058-e086-4ee6-9c95-310fa939b036" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
-    </filter-actions>
-    <filter-actions connection-id="82257482-2236-4c20-8df6-3c741030b497" dataset="main.locations" active-filter-id="52841b38-a261-4cd6-94d9-1cfa801b9ddc">
-      <filter id="52841b38-a261-4cd6-94d9-1cfa801b9ddc" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
+    <filter-actions connection-id="860aa61a-3c39-4d53-aff0-b620b9d8e1ef" dataset="main.users" active-filter-id="ff903a83-c810-4f3a-a0ac-40013d665c8b">
+      <filter id="ff903a83-c810-4f3a-a0ac-40013d665c8b" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND" />
     </filter-actions>
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
@@ -79,9 +74,9 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="82257482-2236-4c20-8df6-3c741030b497" active="true">
+      <connection id="860aa61a-3c39-4d53-aff0-b620b9d8e1ef" active="true">
         <database>
-          <name value="Connection" />
+          <name value="Connection 1" />
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
@@ -94,14 +89,14 @@
           <port value="" />
           <database value="" />
           <files>
-            <file path="C:\Users\damla\PycharmProjects\Car-Rental-System\sqlite\db\database.db" schema="main" />
+            <file path="C:\Users\18230253\PycharmProjects\Car-Rental-System\sqlite\db\database.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
           <deprecated-pwd value="" />
         </database>
         <properties>
-          <auto-commit value="true" />
+          <auto-commit value="false" />
         </properties>
         <ssh-settings>
           <active value="false" />
