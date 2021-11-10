@@ -28,6 +28,8 @@ def insert_row(con, table, row):
             sql = "INSERT INTO " + table + "(id,city,address) VALUES(?,?,?) "
         elif 'bookings' in table:
             sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
+        elif 'users' in table:
+            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, points, salt, hashedPassword) VALUES(?,?,?,?,?,?,?,?)"
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -38,7 +40,7 @@ def insert_row(con, table, row):
         print("Error: ", e)
 
 
-def remove_row(con, table, row):
+"""def remove_row(con, table, row):
     try:
         if 'locations' in table:
             pass
@@ -51,7 +53,7 @@ def remove_row(con, table, row):
         print("Row removed")
         return ex.lastrowid
     except Error as e:
-        print("Error: ", e)
+        print("Error: ", e)"""
 
 
 def update_row(con, table, row):
@@ -60,6 +62,8 @@ def update_row(con, table, row):
             pass
         elif 'bookings' in table:
             sql = "UPDATE " + table + " SET city = ?, vechicleType = ?, startDate = ?, endDate = ? WHERE userId = ?"
+        elif 'users' in table:
+            pass
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -85,13 +89,29 @@ def main():
                         endDate text NOT NULL
                         );"""
 
+    users_table = """CREATE TABLE IF NOT EXISTS users (
+                        userId integer PRIMARY KEY AUTOINCREMENT,
+                        username text NOT NULL,
+                        firstName text NOT NULL,
+                        lastName text,
+                        email text NOT NULL,
+                        phoneNumber text,
+                        points NOT NULL,
+                        salt text NOT NULL,
+                        hashedPassword text NOT NULL
+                        );"""
+
     con = db_connection(r"sqlite/db/database.db")
     create_table(con, location_table)
     create_table(con, booking_table)
+    create_table(con, users_table)
 
     row = ('cork', 'Cork', 'University College Cork, Cork City')
     insert_row(con, "locations", row)
-
+    row = ('limerick', 'Limerick', 'University of Limerick, Casletroy')
+    insert_row(con, "locations", row)
+    row = ('dublin', 'Dublin', 'University College Dublin, Dublin City')
+    insert_row(con, "locations", row)
 
 if __name__ == '__main__':
     main()
