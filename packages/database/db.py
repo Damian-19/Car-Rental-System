@@ -2,116 +2,52 @@ import sqlite3
 from sqlite3 import Error
 
 
-def db_connection(db):
-    connection = None
-    try:
-        connection = sqlite3.connect(db)
-        print("Database connection established.")
-        return connection
-    except Error as e:
-        print("Error: ", e)
-    return connection
+class Colour:
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    DARKCYAN = '\033[36m'
+    BLUE = '\033[94m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
 
 
-def create_table(con, table_sql):
-    try:
-        connection = con.cursor()
-        connection.execute(table_sql)
-        print("Table created.")
-    except Error as e:
-        print("Error: ", e)
+class DataCheck:
+    def __init__(self, table, data):
+        self.table = table
+        self.data = data
+
+    def users_check(self):
+        conn = sqlite3.connect(r"C:\Users\damla\PycharmProjects\Car-Rental-System\sqlite\db\database.db")
+        cursor = conn.cursor()
+        print(self.data["username"])
+        cursor.execute("SELECT * FROM users WHERE username = ? OR email = ?",
+                       (self.data["username"], self.data["email"]))
+        if cursor.fetchone() is not None:
+            raise Exception("User already exists")
 
 
-def insert_row(con, table, row):
-    try:
-        if 'locations' in table:
-            sql = "INSERT INTO " + table + "(id,city,address) VALUES(?,?,?) "
-        elif 'bookings' in table:
-            sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
-        elif 'users' in table:
-            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, points, salt, hashedPassword) VALUES(?,?,?,?,?,?,?,?)"
+class RegisterHandler:
+    def __init__(self, table, data, salt, password):
+        self.table = table
+        self.data = data
+        self.salt = salt
+        self.password = password
 
-        ex = con.cursor()
-        ex.execute(sql, row)
-        con.commit()
-        print("Row inserted")
-        return ex.lastrowid
-    except Error as e:
-        print("Error: ", e)
+    def perform_register(self):
+        try:
+            conn = sqlite3.connect(r"C:\Users\damla\PycharmProjects\Car-Rental-System\sqlite\db\database.db")
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO 'users' (username, firstName, lastName, email, phoneNumber, points, salt, "
+                "hashedPassword) VALUES(?,?,?,?,?,?,?,?)",
+                (self.data["username"], self.data["firstname"], self.data["lastname"], self.data["email"],
+                 self.data["phone"], 0, self.salt, self.password))
+            conn.commit()
 
-
-"""def remove_row(con, table, row):
-    try:
-        if 'locations' in table:
-            pass
-        elif 'bookings' in table:
-            pass
-
-        ex = con.cursor()
-        ex.execute(sql, row)
-        con.commit()
-        print("Row removed")
-        return ex.lastrowid
-    except Error as e:
-        print("Error: ", e)"""
-
-
-def update_row(con, table, row):
-    try:
-        if 'locations' in table:
-            pass
-        elif 'bookings' in table:
-            sql = "UPDATE " + table + " SET city = ?, vechicleType = ?, startDate = ?, endDate = ? WHERE userId = ?"
-        elif 'users' in table:
-            pass
-
-        ex = con.cursor()
-        ex.execute(sql, row)
-        con.commit()
-        print("Row updated")
-        return ex.lastrowid
-    except Error as e:
-        print("Error: ", e)
-
-
-def main():
-    location_table = """CREATE TABLE IF NOT EXISTS locations (
-                        id text PRIMARY KEY,
-                        city text,
-                        address text NOT NULL
-                        );"""
-
-    booking_table = """CREATE TABLE IF NOT EXISTS bookings (
-                        userId integer PRIMARY KEY,
-                        city text NOT NULL,
-                        vehicleType text NOT NULL,
-                        startDate text NOT NULL,
-                        endDate text NOT NULL
-                        );"""
-
-    users_table = """CREATE TABLE IF NOT EXISTS users (
-                        userId integer PRIMARY KEY AUTOINCREMENT,
-                        username text NOT NULL,
-                        firstName text NOT NULL,
-                        lastName text,
-                        email text NOT NULL,
-                        phoneNumber text,
-                        points NOT NULL,
-                        salt text NOT NULL,
-                        hashedPassword text NOT NULL
-                        );"""
-
-    con = db_connection(r"sqlite/db/database.db")
-    create_table(con, location_table)
-    create_table(con, booking_table)
-    create_table(con, users_table)
-
-    row = ('cork', 'Cork', 'University College Cork, Cork City')
-    insert_row(con, "locations", row)
-    row = ('limerick', 'Limerick', 'University of Limerick, Casletroy')
-    insert_row(con, "locations", row)
-    row = ('dublin', 'Dublin', 'University College Dublin, Dublin City')
-    insert_row(con, "locations", row)
-
-if __name__ == '__main__':
-    main()
+        except (Exception, Error) as e:
+            print(Colour.RED + Colour.BOLD + "ERROR: " + str(e) + Colour.END)
+            return e

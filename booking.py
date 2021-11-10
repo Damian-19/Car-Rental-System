@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Error
-from packages.database import db
+from packages.database import old_db
 
 
 def db_connection(db):

@@ -5,6 +5,8 @@ from sqlite3 import Error
 from packages.gui import dashboard as dashboardfunctions
 from packages.business import main as main, globalVariables as gV
 
+import packages.business.main
+
 global conn, cursor
 
 # frames
@@ -132,36 +134,27 @@ def login():
 
 
 def register():
-    database()
+    #database()
     if gV.RUSERNAME.get() == "" or gV.RPASSWORD.get() == "" or gV.FIRSTNAME.get() == "" or gV.LASTNAME.get() == "" or \
             gV.EMAIL.get() == "" or gV.PHONENUMBER.get() == "":
         lbl_text.config(text="Please fill in all fields.", fg="red")
     else:
-        cursor.execute("SELECT * FROM `users` WHERE `username` = ? AND `email` = ?", (gV.RUSERNAME.get(),
-                                                                                      gV.EMAIL.get()))
-        if cursor.fetchone() is not None:
-            lbl_text.config(text="User already exists")
-        else:
-            salt, password_hash = main.hash_password(gV.RPASSWORD.get())
-            try:
-                cursor.execute(
-                    "INSERT INTO 'users' (username, firstName, lastName, email, phoneNumber, points, salt, "
-                    "hashedPassword) VALUES(?,?,?,?,?,?,?,?)",
-                    (gV.RUSERNAME.get(), gV.FIRSTNAME.get(), gV.LASTNAME.get(), gV.EMAIL.get(), gV.PHONENUMBER.get(), 0,
-                     salt,
-                     password_hash))
-                conn.commit()
-                lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
-                gV.RUSERNAME.set("")
-                gV.FIRSTNAME.set("")
-                gV.LASTNAME.set("")
-                gV.EMAIL.set("")
-                gV.PHONENUMBER.set("")
-                gV.RPASSWORD.set("")
-            except Error as e:
-                print("Error: ", e)
-    cursor.close()
-    conn.close()
+        data = {
+            "username": gV.RUSERNAME.get(),
+            "firstname": gV.FIRSTNAME.get(),
+            "lastname": gV.LASTNAME.get(),
+            "email": gV.EMAIL.get(),
+            "phone": gV.PHONENUMBER.get(),
+            "password": gV.RPASSWORD.get()
+        }
+        instance = main.Register('users', data)
+        try:
+            result = instance.init_register()
+            instance.register_cleanup()
+            lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
+        except Exception:
+            lbl_register_text.config(text="Username or email already in use", fg='red')
+        print("Reached end of register function")
 
 
 lbl_text = tk.Label(login_frame)
