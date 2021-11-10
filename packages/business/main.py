@@ -67,12 +67,11 @@ class Login:
             # user does exist
           db.LoginHandler('user', self.data)
 
-
-        except AssertionError as e:
-            return e
+        #except AssertionError as e:
+          #  return e
 
     def login_cleanup(self):
         gV.USERNAME.get()
         gV.PASSWORD.get()
-        self.logindata = {}
+        self.data = {}
 
