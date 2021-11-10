@@ -65,10 +65,10 @@ class Login:
                 print(e)
                 raise Exception("User does not exist")
             # user does exist
-          db.LoginHandler('user', self.data)
+            db.LoginHandler('user', self.data)
 
-        #except AssertionError as e:
-          #  return e
+        except AssertionError as e:
+            return e
 
     def login_cleanup(self):
         gV.USERNAME.get()
