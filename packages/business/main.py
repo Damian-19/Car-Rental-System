@@ -32,6 +32,7 @@ class Register:
             try:
                 db.DataCheck('users', self.data).users_check()
             except Exception as e:
+                print(e)
                 raise Exception("User already exists2")
             # user does not already exist
             salt, password = hash_password(self.data["password"])
@@ -48,4 +49,34 @@ class Register:
         gV.PHONENUMBER.set("")
         gV.RPASSWORD.set("")
         self.data = {}
+
+
+class Login:
+    def __init__(self, table, logindata):
+        self.table = table
+        self.logindata = logindata
+
+    def init_login(self):
+        try:
+            assert type(self.logindata) is dict
+            try:
+                db.DataCheck('users', self.logindata).login_check()
+            except Exception as e:
+                raise Exception("User does not exist exist")
+            # user does exist
+           # salt, password = hash_password(self.logindata["password"])
+                assert main.check_password(salt, password, gV.PASSWORD.get())
+                dashboard()
+                gV.USERNAME.set("")
+                gV.PASSWORD.set("")
+                lbl_text.config(text="")
+                db.LoginHandler('users', self.logindata, salt, password).perform_login()
+
+        except AssertionError as e:
+            return e
+
+    def login_cleanup(self):
+        gV.USERNAME.get()
+        gV.PASSWORD.get()
+        self.logindata = {}
 

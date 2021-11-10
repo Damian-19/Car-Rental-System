@@ -30,6 +30,16 @@ class DataCheck:
             raise Exception("User already exists")
 
 
+    def login_check(self):
+        conn = sqlite3.connect(r"..\..\sqlite\db\database.db")
+        cursor = conn.cursor()
+        print(self.data["username"])
+        cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?",
+                       (self.data["username"], self.data["password"]))
+        if cursor.fetchone() is None:
+            raise Exception("User does not exists")
+
+
 class RegisterHandler:
     def __init__(self, table, data, salt, password):
         self.table = table
@@ -47,6 +57,45 @@ class RegisterHandler:
                 (self.data["username"], self.data["firstname"], self.data["lastname"], self.data["email"],
                  self.data["phone"], 0, self.salt, self.password))
             conn.commit()
+
+        except (Exception, Error) as e:
+            print(Colour.RED + Colour.BOLD + "ERROR: " + str(e) + Colour.END)
+            return e
+
+
+class LoginHandler:
+    def __init__(self, table, logindata, username, salt, password):
+        self.table = table
+        self.logindata = logindata
+        self.salt = salt
+        self.username = username
+        self.password = password
+
+    def perform_login(self):
+        try:
+            conn = sqlite3.connect(r"..\..\sqlite\db\database.db")
+            cursor = conn.cursor()
+            cursor.execute("SELECT salt, hashedPassword FROM users WHERE username = ? ",
+                                (self.logindata["username"], self.salt, self.password))
+            salt, password = cursor.fetchone()
+            print(type(salt))
+            # salt = salt.encode(encoding='UTF=8')
+            print(type(salt))
+            print(type(password))
+            cursor.close()
+            conn.close()
+            conn.commit()
+
+           # assert main.check_password(salt, password, gV.PASSWORD.get())
+            #       dashboard()
+            #       gV.USERNAME.set("")
+            #       gV.PASSWORD.set("")
+            #       lbl_text.config(text="")
+            #  except AssertionError:
+            #     lbl_text.config(text="Invalid username or password", fg="red")
+            #    gV.USERNAME.set("")
+            #   gV.PASSWORD.set("")
+
 
         except (Exception, Error) as e:
             print(Colour.RED + Colour.BOLD + "ERROR: " + str(e) + Colour.END)
