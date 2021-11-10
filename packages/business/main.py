@@ -5,6 +5,7 @@ from typing import Tuple
 
 import packages.database.db as db
 import packages.business.globalVariables as gV
+from packages.business.errors import *
 
 
 # adapted from Mark Amery - https://stackoverflow.com/a/56915300
@@ -29,6 +30,21 @@ class Register:
     def init_register(self):
         try:
             assert type(self.data) is dict
+            key_list = (
+                "username",
+                "firstname",
+                "lastname",
+                "email",
+                "phone",
+                "password"
+            )
+            for e in key_list:
+                for key in self.data:
+                    try:
+                        assert key in list
+                    except AssertionError:
+                        raise ValueNotFoundError
+                    return
             try:
                 db.DataCheck('users', self.data).users_check()
             except Exception as e:
