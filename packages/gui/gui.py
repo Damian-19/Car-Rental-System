@@ -135,28 +135,29 @@ def login():
 
 
 def register():
-    """if gV.RUSERNAME.get() == "" or gV.RPASSWORD.get() == "" or gV.FIRSTNAME.get() == "" or gV.LASTNAME.get() == "" or \
+    if gV.RUSERNAME.get() == "" or gV.RPASSWORD.get() == "" or gV.FIRSTNAME.get() == "" or gV.LASTNAME.get() == "" or \
             gV.EMAIL.get() == "" or gV.PHONENUMBER.get() == "":
-        lbl_text.config(text="Please fill in all fields.", fg="red")"""
-    #else:
-    data = {
-        "username": gV.RUSERNAME.get(),
-        "firstname": gV.FIRSTNAME.get(),
-        "lastname": gV.LASTNAME.get(),
-        "email": gV.EMAIL.get(),
-        "phone": gV.PHONENUMBER.get(),
-        "password": gV.RPASSWORD.get()
-    }
-    instance = main.Register('users', data)
-    try:
-        instance.init_register()
-        instance.register_cleanup()
-        lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
-    except ValueNotFoundError:
-        lbl_register_text.config(text="Please fill in all fields", fg='red')
-    except Exception:
-        lbl_register_text.config(text="Username or email already in use", fg='red')
-    print("Reached end of register function")
+        lbl_register_text.config(text="Please fill in all fields.", fg="red")
+    else:
+        data = {
+            "username": gV.RUSERNAME.get(),
+            "firstname": gV.FIRSTNAME.get(),
+            "lastname": gV.LASTNAME.get(),
+            "email": gV.EMAIL.get(),
+            "phone": gV.PHONENUMBER.get(),
+            "password": gV.RPASSWORD.get()
+        }
+        instance = main.Register('users', data)
+        try:
+            instance.init_register()
+            instance.register_cleanup()
+            lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
+        except ValueNotFoundError:
+            lbl_register_text.config(text="Please fill in all fields", fg='red')
+        except Exception as e:
+            print(e)
+            lbl_register_text.config(text="Username or email already in use", fg='red')
+        print("Reached end of register function")
 
 
 lbl_text = tk.Label(login_frame)
