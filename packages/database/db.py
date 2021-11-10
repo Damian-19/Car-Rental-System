@@ -1,6 +1,8 @@
 import sqlite3
 from sqlite3 import Error
 
+from packages.gui import dashboard
+from packages.business import main as main, globalVariables as gV
 
 class Colour:
     PURPLE = '\033[95m'
@@ -29,7 +31,6 @@ class DataCheck:
         if cursor.fetchone() is not None:
             raise Exception("User already exists")
 
-
     def login_check(self):
         conn = sqlite3.connect(r"..\..\sqlite\db\database.db")
         cursor = conn.cursor()
@@ -37,7 +38,7 @@ class DataCheck:
         cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?",
                        (self.data["username"], self.data["password"]))
         if cursor.fetchone() is None:
-            raise Exception("User does not exists")
+            raise Exception("User does not exist in database")
 
 
 class RegisterHandler:
@@ -64,19 +65,16 @@ class RegisterHandler:
 
 
 class LoginHandler:
-    def __init__(self, table, logindata, username, salt, password):
+    def __init__(self, table, data):
         self.table = table
-        self.logindata = logindata
-        self.salt = salt
-        self.username = username
-        self.password = password
+        self.data = data
 
     def perform_login(self):
         try:
             conn = sqlite3.connect(r"..\..\sqlite\db\database.db")
             cursor = conn.cursor()
             cursor.execute("SELECT salt, hashedPassword FROM users WHERE username = ? ",
-                                (self.logindata["username"], self.salt, self.password))
+                                (self.data["username"]))
             salt, password = cursor.fetchone()
             print(type(salt))
             # salt = salt.encode(encoding='UTF=8')
@@ -85,6 +83,12 @@ class LoginHandler:
             cursor.close()
             conn.close()
             conn.commit()
+
+            assert main.check_password(salt, password, self.data["password"])
+            dashboard()
+            gV.USERNAME.set("")
+            gV.PASSWORD.set("")
+
 
            # assert main.check_password(salt, password, gV.PASSWORD.get())
             #       dashboard()
@@ -96,7 +100,7 @@ class LoginHandler:
             #    gV.USERNAME.set("")
             #   gV.PASSWORD.set("")
 
-
         except (Exception, Error) as e:
+            print(e)
             print(Colour.RED + Colour.BOLD + "ERROR: " + str(e) + Colour.END)
             return e

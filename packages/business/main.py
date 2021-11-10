@@ -52,25 +52,21 @@ class Register:
 
 
 class Login:
-    def __init__(self, table, logindata):
+    def __init__(self, table, data):
         self.table = table
-        self.logindata = logindata
+        self.data = data
 
     def init_login(self):
         try:
-            assert type(self.logindata) is dict
+            assert type(self.data) is dict
             try:
-                db.DataCheck('users', self.logindata).login_check()
+                db.DataCheck('users', self.data).login_check()
             except Exception as e:
-                raise Exception("User does not exist exist")
+                print(e)
+                raise Exception("User does not exist")
             # user does exist
-           # salt, password = hash_password(self.logindata["password"])
-                assert main.check_password(salt, password, gV.PASSWORD.get())
-                dashboard()
-                gV.USERNAME.set("")
-                gV.PASSWORD.set("")
-                lbl_text.config(text="")
-                db.LoginHandler('users', self.logindata, salt, password).perform_login()
+          db.LoginHandler('user', self.data)
+
 
         except AssertionError as e:
             return e

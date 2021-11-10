@@ -112,15 +112,14 @@ def login():
     if gV.USERNAME.get() == "" or gV.PASSWORD.get() == "":
         lbl_text.config(text="Please fill out both fields.", fg="red")
     else:
-        logindata = { "username": gV.USERNAME.get(),
-                      "password": gV.PASSWORD.get()
-                      }
+        logindata = {"username": gV.USERNAME.get(), "password": gV.PASSWORD.get()}
         instance = main.Login('users', logindata)
     try:
         result = instance.init_login()
         instance.login_cleanup()
         lbl_text.config(text="Signup successful. Please Login.", fg="green")
-    except Exception:
+    except Exception as e:
+        print(e)
         lbl_text.config(text="Invalid username or password", fg="red")
     print("Reached end of login function")
    #     cursor.execute("SELECT salt, hashedPassword FROM users WHERE username = ? ",
