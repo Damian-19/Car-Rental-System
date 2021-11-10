@@ -1,4 +1,4 @@
-import globalVariables as gV
+from packages.business import globalVariables as gV
 import tkinter as tk
 
 

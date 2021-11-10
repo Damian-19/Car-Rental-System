@@ -1,13 +1,13 @@
 import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
-import globalVariables as gv
+from packages.business import globalVariables as gv
 
 
 def database():
     # create database connection
     global conn, cursor
-    conn = sqlite3.connect(r"sqlite/db/database.db")
+    conn = sqlite3.connect(r"../../sqlite/db/database.db")
     cursor = conn.cursor()
 
 

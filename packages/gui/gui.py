@@ -2,9 +2,8 @@ import sqlite3
 import tkinter as tk
 from sqlite3 import Error
 
-import dashboard as dashboardfunctions
-import globalVariables as gV
-import main as main
+from packages.gui import dashboard as dashboardfunctions
+from packages.business import main as main, globalVariables as gV
 
 global conn, cursor
 
@@ -102,7 +101,7 @@ def dashboard():
 def database():
     # create database connection
     global conn, cursor
-    conn = sqlite3.connect(r"sqlite/db/database.db")
+    conn = sqlite3.connect(r"../../sqlite/db/database.db")
     cursor = conn.cursor()
 
 
