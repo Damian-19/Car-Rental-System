@@ -21,7 +21,7 @@ class DataCheck:
         self.data = data
 
     def users_check(self):
-        conn = sqlite3.connect(r"C:\Users\damla\PycharmProjects\Car-Rental-System\sqlite\db\database.db")
+        conn = sqlite3.connect(r"../../sqlite/db/database.db")
         cursor = conn.cursor()
         print(self.data["username"])
         cursor.execute("SELECT * FROM users WHERE username = ? OR email = ?",
@@ -39,7 +39,7 @@ class RegisterHandler:
 
     def perform_register(self):
         try:
-            conn = sqlite3.connect(r"C:\Users\damla\PycharmProjects\Car-Rental-System\sqlite\db\database.db")
+            conn = sqlite3.connect(r"../../sqlite/db/database.db")
             cursor = conn.cursor()
             cursor.execute(
                 "INSERT INTO 'users' (username, firstName, lastName, email, phoneNumber, points, salt, "
