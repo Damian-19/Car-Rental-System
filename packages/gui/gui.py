@@ -1,8 +1,11 @@
 import sqlite3
 import tkinter as tk
+from sqlite3 import Error
 
-from packages.business import main as main, globalVariables as gV
 from packages.gui import dashboard as dashboardfunctions
+from packages.business import main as main, globalVariables as gV
+
+import packages.business.main
 
 global conn, cursor
 
@@ -109,25 +112,35 @@ def login():
     if gV.USERNAME.get() == "" or gV.PASSWORD.get() == "":
         lbl_text.config(text="Please fill out both fields.", fg="red")
     else:
-        cursor.execute("SELECT salt, hashedPassword FROM users WHERE username = ? ",
-                       (gV.USERNAME.get(),))
-        salt, password = cursor.fetchone()
-        print(type(salt))
+        logindata = {"username": gV.USERNAME.get(), "password": gV.PASSWORD.get()}
+        instance = main.Login('users', logindata)
+    try:
+        result = instance.init_login()
+        instance.login_cleanup()
+        lbl_text.config(text="Signup successful. Please Login.", fg="green")
+    except Exception as e:
+        print(e)
+        lbl_text.config(text="Invalid username or password", fg="red")
+    print("Reached end of login function")
+   #     cursor.execute("SELECT salt, hashedPassword FROM users WHERE username = ? ",
+   #                    (gV.USERNAME.get(),))
+    #    salt, password = cursor.fetchone()
+    #    print(type(salt))
         # salt = salt.encode(encoding='UTF=8')
-        print(type(salt))
-        print(type(password))
-        try:
-            assert main.check_password(salt, password, gV.PASSWORD.get())
-            dashboard()
-            gV.USERNAME.set("")
-            gV.PASSWORD.set("")
-            lbl_text.config(text="")
-        except AssertionError:
-            lbl_text.config(text="Invalid username or password", fg="red")
-            gV.USERNAME.set("")
-            gV.PASSWORD.set("")
-    cursor.close()
-    conn.close()
+    #    print(type(salt))
+    #    print(type(password))
+    #    try:
+    #        assert main.check_password(salt, password, gV.PASSWORD.get())
+     #       dashboard()
+     #       gV.USERNAME.set("")
+     #       gV.PASSWORD.set("")
+     #       lbl_text.config(text="")
+      #  except AssertionError:
+       #     lbl_text.config(text="Invalid username or password", fg="red")
+        #    gV.USERNAME.set("")
+         #   gV.PASSWORD.set("")
+    #cursor.close()
+    #conn.close()
 
 
 def register():
