@@ -1,12 +1,8 @@
 import sqlite3
 import tkinter as tk
-from sqlite3 import Error
 
-from packages.gui import dashboard as dashboardfunctions
 from packages.business import main as main, globalVariables as gV
-from packages.business.errors import *
-
-import packages.business.main
+from packages.gui import dashboard as dashboardfunctions
 
 global conn, cursor
 
@@ -16,7 +12,7 @@ login_frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightt
 login_frame.grid(column=0, row=0, sticky='nsew', padx=2, pady=2)
 register_frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
 register_frame.grid(column=1, row=0, sticky='nsew', padx=2, pady=2)
-# ==============================LABELS=========================================
+
 title = tk.Label(login_frame, text="Login", font=('arial', 15))
 title.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
 
@@ -135,9 +131,15 @@ def login():
 
 
 def register():
+    """
+    function to register a user in the database
+    current params are all retrieved from global variables
+    """
+    # check all fields are filled in
     if gV.RUSERNAME.get() == "" or gV.RPASSWORD.get() == "" or gV.FIRSTNAME.get() == "" or gV.LASTNAME.get() == "" or \
             gV.EMAIL.get() == "" or gV.PHONENUMBER.get() == "":
         lbl_register_text.config(text="Please fill in all fields.", fg="red")
+    # perform register
     else:
         data = {
             "username": gV.RUSERNAME.get(),
@@ -151,9 +153,9 @@ def register():
         try:
             instance.init_register()
             instance.register_cleanup()
+            # successful register
             lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
-        except ValueNotFoundError:
-            lbl_register_text.config(text="Please fill in all fields", fg='red')
+            # register failed
         except Exception as e:
             print(e)
             lbl_register_text.config(text="Username or email already in use", fg='red')
