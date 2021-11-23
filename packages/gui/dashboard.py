@@ -1,7 +1,9 @@
 import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkcalendar import Calendar, DateEntry
 from packages.business import globalVariables as gv
+from packages.database import db
 
 
 def database():
@@ -36,6 +38,83 @@ def create_dashboard():
 
     tabs.grid(column=0, row=1)
     populate_account()
+    rent_tab()
+
+
+def rent_tab():
+    gv.rent_data = {}
+    a = tk.Label(gv.rent_frame, text="Location").grid(row=0, column=0)
+    b = tk.Label(gv.rent_frame, text="Vehicle Type").grid(row=1, column=0)
+    c = tk.Label(gv.rent_frame, text="Start Date").grid(row=2, column=0)
+    d = tk.Label(gv.rent_frame, text="End Date").grid(row=3, column=0)
+
+    # location dropdown
+    selected_location = tk.StringVar()
+    location_dropdown = ttk.Combobox(gv.rent_frame, textvariable=selected_location)
+    location_dropdown['values'] = ('Cork',
+                                   'Limerick',
+                                   'Dublin',
+                                   'Waterford')
+    location_dropdown['state'] = 'readonly'
+    location_dropdown.grid(row=0, column=1)
+
+    # vehicle dropdown
+    selected_vehicle = tk.StringVar()
+    vehicle_dropdown = ttk.Combobox(gv.rent_frame, textvariable=selected_vehicle)
+    vehicle_dropdown['values'] = ('Car',
+                                  'Small Van',
+                                  'Big Van',
+                                  '7 Seater',
+                                  'Motorbike'
+                                  )
+    vehicle_dropdown['state'] = 'readonly'
+    vehicle_dropdown.grid(row=1, column=1)
+
+    # start date
+    start_date = DateEntry(gv.rent_frame, locale='en_IE')
+    start_date.grid(row=2, column=1)
+
+    # end date
+    end_date = DateEntry(gv.rent_frame, locale='en_IE')
+    end_date.grid(row=3, column=1)
+
+    print(start_date.get_date())
+
+    gv.rent_data = {
+        "userid": db.get_userid(),
+        "location": selected_location.get(),
+        "vehicle": selected_vehicle.get()
+    }
+
+    # rent button
+    rent_button = tk.Button(gv.rent_frame, text="Submit", command=lambda: rent_car(selected_location.get(),
+                                                                                   selected_vehicle.get(),
+                                                                                   start_date.get_date(),
+                                                                                   end_date.get_date()))
+    rent_button.grid(row=4, column=1, columnspan=1, sticky="we", padx=5, pady=5)
+
+
+def rent_car(location, vehicle, startdate, enddate):
+    data = gv.rent_data
+    data = {
+        "userid": db.get_userid(),
+        "location": location,
+        "vehicle": vehicle,
+        "startdate": startdate,
+        "enddate": enddate
+    }
+    print("start")
+    for i in data:
+        print(data.get(i))
+        if data.get(i) is None:
+            print("none")
+
+    print("end")
+
+    print(data["startdate"])
+    instance = db.DatabaseHandler('bookings', data)
+    print(instance.check_table())
+    instance.add_booking()
 
 
 def populate_account():

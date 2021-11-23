@@ -2,6 +2,53 @@ import sqlite3
 from sqlite3 import Error
 
 from packages.business import main as main
+from packages.business import globalVariables as gv
+
+
+def get_userid():
+    con = sqlite3.connect(r"../../sqlite/db/database.db")
+    cursor = con.cursor()
+    try:
+        cursor.execute("SELECT userId FROM users WHERE username = ?", (str(gv.USERNAME.get()),))
+        userid = str(cursor.fetchone()).replace("(", "").replace(")", "").replace(",", "")
+        return userid
+    except Error as e:
+        print(f"{Colour.RED} {Colour.BOLD} GET USERID ERROR: {str(e)} {Colour.END}")
+
+
+class DatabaseHandler:
+    def __init__(self, table, data):
+        self.table = table
+        self.data = data
+
+    def check_table(self):
+        con = sqlite3.connect(r"../../sqlite/db/database.db")
+        cursor = con.cursor()
+        print(self.data["userid"])
+        try:
+            if 'bookings' in self.table:
+                cursor.execute("SELECT * FROM " + self.table + " WHERE userId = ?", (self.data["userid"]))
+                print(cursor.fetchall())
+                return cursor.fetchall()
+            else:
+                raise Exception('incorrect table')
+
+        except Error as e:
+            print(f"{Colour.RED} {Colour.BOLD} BOOKINGS CHECK ERROR: {str(e)} {Colour.END}")
+
+    def add_booking(self):
+        try:
+            con = sqlite3.connect(r"../../sqlite/db/database.db")
+            cursor = con.cursor()
+
+            cursor.execute("INSERT INTO bookings (userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) ",
+                           (self.data["userid"], self.data["location"], self.data["vehicle"], self.data["startdate"],
+                            self.data["enddate"]))
+
+        except Error as e:
+            print(f"{Colour.RED} {Colour.BOLD} BOOKINGS CHECK ERROR: {str(e)} {Colour.END}")
+
+        print("Booking inserted")
 
 
 class DataCheck:
@@ -48,7 +95,8 @@ class RegisterHandler:
             conn.commit()
 
         except (Exception, Error) as e:
-            print(Colour.RED + Colour.BOLD + "ERROR: " + str(e) + Colour.END)
+            # print(Colour.RED + Colour.BOLD + "ERROR: " + str(e) + Colour.END)
+            print(f"{Colour.RED} {Colour.BOLD} ERROR: {str(e)} {Colour.END}")
             return e
 
 
