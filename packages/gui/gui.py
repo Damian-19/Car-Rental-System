@@ -128,7 +128,6 @@ def login():
     except Exception as e:
         print(e)
         lbl_text.config(text="Invalid username or password", fg="red")
-    print("Reached end of login function")
 
 
 def register():

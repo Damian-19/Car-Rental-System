@@ -5,6 +5,6 @@ class Error(Exception):
     pass
 
 
-class ValueNotFoundError(Error):
-    """Raised when a value is missing"""
+class MaxLoansReached(Error):
+    """Raised when a user already has a vehicle on load"""
     pass

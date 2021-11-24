@@ -14,4 +14,4 @@ LASTNAME = tk.StringVar()
 EMAIL = tk.StringVar()
 PHONENUMBER = tk.StringVar()
 
-global home, account_frame, rent_frame, rent_data
+global home, account_frame, rent_frame, booking_frame, rent_data

@@ -22,6 +22,14 @@ def check_password(salt: bytes, password_hash: bytes, password: str) -> bool:
     )
 
 
+class BusinessLogic:
+    def __init__(self, data):
+        self.data = data
+
+    def calculate_points(self):
+        pass
+
+
 class Register:
     def __init__(self, table, data):
         self.table = table

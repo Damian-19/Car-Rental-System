@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 from tkcalendar import Calendar, DateEntry
 from packages.business import globalVariables as gv
 from packages.database import db
+from packages.business import  errors
 
 
 def database():
@@ -21,17 +22,17 @@ def begin_edit(button_name, save_info_button):
 def create_dashboard():
     tabs = ttk.Notebook(gv.home)
 
-    catalog_frame = tk.Frame(tabs)
+    gv.booking_frame = tk.Frame(tabs)
     gv.rent_frame = tk.Frame(tabs)
     locations_frame = tk.Frame(tabs)
     gv.account_frame = tk.Frame(tabs)
 
-    catalog_frame.grid(column=0, row=0)
+    gv.booking_frame.grid(column=0, row=0)
     gv.rent_frame.grid(column=1, row=0)
     locations_frame.grid(column=2, row=0)
     gv.account_frame.grid(column=3, row=0)
 
-    tabs.add(catalog_frame, text="Catalog")
+    tabs.add(gv.booking_frame, text="Bookings")
     tabs.add(gv.rent_frame, text="Rent Car")
     tabs.add(locations_frame, text="Locations")
     tabs.add(gv.account_frame, text="Account")
@@ -39,6 +40,24 @@ def create_dashboard():
     tabs.grid(column=0, row=1)
     populate_account()
     rent_tab()
+    bookings_tab()
+
+
+def bookings_tab():
+    con = sqlite3.connect(r"../../sqlite/db/database.db")
+    cursor = con.cursor()
+    cursor.execute("SELECT city, vehicleType, startDate, endDate FROM bookings WHERE userid = ?", (db.get_userid(),))
+    i = 1
+    tk.Label(gv.booking_frame, text="Location").grid(row=0, column=0)
+    tk.Label(gv.booking_frame, text="Vehicle Type").grid(row=0, column=1)
+    tk.Label(gv.booking_frame, text="Rent Date").grid(row=0, column=2)
+    tk.Label(gv.booking_frame, text="Return Date").grid(row=0, column=3)
+
+    for e in cursor.fetchall():
+        for j in range(len(e)):
+            box = tk.Entry(gv.booking_frame, justify='center')
+            box.grid(row=i, column=j)
+            box.insert(tk.END, e[j])
 
 
 def rent_tab():
@@ -78,8 +97,6 @@ def rent_tab():
     end_date = DateEntry(gv.rent_frame, locale='en_IE')
     end_date.grid(row=3, column=1)
 
-    print(start_date.get_date())
-
     gv.rent_data = {
         "userid": db.get_userid(),
         "location": selected_location.get(),
@@ -91,7 +108,7 @@ def rent_tab():
                                                                                    selected_vehicle.get(),
                                                                                    start_date.get_date(),
                                                                                    end_date.get_date()))
-    rent_button.grid(row=4, column=1, columnspan=1, sticky="we", padx=5, pady=5)
+    rent_button.grid(row=5, column=1, columnspan=1, sticky="we", padx=5, pady=5)
 
 
 def rent_car(location, vehicle, startdate, enddate):
@@ -103,18 +120,17 @@ def rent_car(location, vehicle, startdate, enddate):
         "startdate": startdate,
         "enddate": enddate
     }
-    print("start")
-    for i in data:
-        print(data.get(i))
-        if data.get(i) is None:
-            print("none")
 
-    print("end")
-
-    print(data["startdate"])
     instance = db.DatabaseHandler('bookings', data)
-    print(instance.check_table())
-    instance.add_booking()
+    try:
+        if instance.check_table() <= 1:
+            raise errors.MaxLoansReached
+        instance.add_booking()
+    except (errors.MaxLoansReached, AssertionError) as e:
+        print(f"{db.Colour.RED} {db.Colour.BOLD} User already has a vehicle on loan {db.Colour.END}")
+        lbl_text = tk.Label(gv.rent_frame)
+        lbl_text.grid(row=4, columnspan=2)
+        lbl_text.config(text="You already have a vehicle on loan", fg="red")
 
 
 def populate_account():

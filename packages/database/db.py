@@ -2,6 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 from packages.business import main as main
+from packages.business import errors
 from packages.business import globalVariables as gv
 
 
@@ -10,8 +11,7 @@ def get_userid():
     cursor = con.cursor()
     try:
         cursor.execute("SELECT userId FROM users WHERE username = ?", (str(gv.USERNAME.get()),))
-        userid = str(cursor.fetchone()).replace("(", "").replace(")", "").replace(",", "")
-        return userid
+        return str(cursor.fetchone()[0])
     except Error as e:
         print(f"{Colour.RED} {Colour.BOLD} GET USERID ERROR: {str(e)} {Colour.END}")
 
@@ -24,12 +24,14 @@ class DatabaseHandler:
     def check_table(self):
         con = sqlite3.connect(r"../../sqlite/db/database.db")
         cursor = con.cursor()
-        print(self.data["userid"])
         try:
             if 'bookings' in self.table:
                 cursor.execute("SELECT * FROM " + self.table + " WHERE userId = ?", (self.data["userid"]))
-                print(cursor.fetchall())
-                return cursor.fetchall()
+                i = 0
+                for e in cursor.fetchall():
+                    i += 1
+                print(f"{i} row(s) found")
+                return i
             else:
                 raise Exception('incorrect table')
 
@@ -44,11 +46,12 @@ class DatabaseHandler:
             cursor.execute("INSERT INTO bookings (userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) ",
                            (self.data["userid"], self.data["location"], self.data["vehicle"], self.data["startdate"],
                             self.data["enddate"]))
+            con.commit()
 
         except Error as e:
             print(f"{Colour.RED} {Colour.BOLD} BOOKINGS CHECK ERROR: {str(e)} {Colour.END}")
 
-        print("Booking inserted")
+        print("add_booking finished")
 
 
 class DataCheck:
