@@ -27,7 +27,7 @@ class BusinessLogic:
         self.data = data
 
     def calculate_points(self):
-        pass
+        instance = db.DatabaseHandler()
 
 
 class Register:

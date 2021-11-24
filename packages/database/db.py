@@ -21,7 +21,7 @@ class DatabaseHandler:
         self.table = table
         self.data = data
 
-    def check_table(self):
+    def check_bookings(self):
         con = sqlite3.connect(r"../../sqlite/db/database.db")
         cursor = con.cursor()
         try:
@@ -37,6 +37,32 @@ class DatabaseHandler:
 
         except Error as e:
             print(f"{Colour.RED} {Colour.BOLD} BOOKINGS CHECK ERROR: {str(e)} {Colour.END}")
+
+    def retrieve_booking(self):
+        con = sqlite3.connect(r"../../sqlite/db/database.db")
+        cursor = con.cursor()
+        try:
+            if 'bookings' in self.table:
+                cursor.execute("SELECT startDate, endDate FROM " + self.table + " WHERE userId = ?", (self.data["userid"]))
+                if cursor.fetchall() is not None:
+                    return cursor.fetchall()
+            else:
+                raise Exception("No bookings found")
+        except Error as e:
+            print(f"{Colour.RED} {Colour.BOLD} BOOKINGS RETRIEVE ERROR: {str(e)} {Colour.END}")
+
+    def retrieve_user_points(self):
+        con = sqlite3.connect(r"../../sqlite/db/database.db")
+        cursor = con.cursor()
+        try:
+            if 'users' in self.table:
+                cursor.execute("SELECT points FROM " + self.table + " WHERE userId = ?", (self.data["userid"]))
+                if cursor.fetchall() is not None:
+                    return cursor.fetchall()[0]
+            else:
+                raise Exception("No user / points found")
+        except Error as e:
+            print(f"{Colour.RED} {Colour.BOLD} POINTS RETRIEVE ERROR: {str(e)} {Colour.END}")
 
     def add_booking(self):
         try:

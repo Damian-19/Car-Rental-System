@@ -123,7 +123,7 @@ def rent_car(location, vehicle, startdate, enddate):
 
     instance = db.DatabaseHandler('bookings', data)
     try:
-        if instance.check_table() <= 1:
+        if instance.check_bookings() <= 1:
             raise errors.MaxLoansReached
         instance.add_booking()
     except (errors.MaxLoansReached, AssertionError) as e:
