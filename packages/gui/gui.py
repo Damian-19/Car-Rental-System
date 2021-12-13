@@ -108,6 +108,7 @@ def login():
     """
     function to login a user
     current params are all retrieved from global variables
+    MVC - View
     """
     database()
     if gV.USERNAME.get() == "" or gV.PASSWORD.get() == "":
@@ -134,6 +135,7 @@ def register():
     """
     function to register a user in the database
     current params are all retrieved from global variables
+    MVC - View
     """
     # check all fields are filled in
     if gV.RUSERNAME.get() == "" or gV.RPASSWORD.get() == "" or gV.FIRSTNAME.get() == "" or gV.LASTNAME.get() == "" or \

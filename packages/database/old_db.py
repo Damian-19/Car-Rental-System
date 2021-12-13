@@ -86,7 +86,9 @@ def main():
                         city text NOT NULL,
                         vehicleType text NOT NULL,
                         startDate text NOT NULL,
-                        endDate text NOT NULL
+                        endDate text NOT NULL,
+                        foreign key (userId) references users(userId),
+                        foreign key (city) references locations(city)
                         );"""
 
     users_table = """CREATE TABLE IF NOT EXISTS users (

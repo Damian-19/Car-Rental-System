@@ -1,11 +1,11 @@
 import hashlib
 import hmac
 import os
+from datetime import datetime
 from typing import Tuple
 
-import packages.database.db as db
 import packages.business.globalVariables as gV
-from packages.business.errors import *
+import packages.database.db as db
 
 
 # adapted from Mark Amery - https://stackoverflow.com/a/56915300
@@ -25,17 +25,44 @@ def check_password(salt: bytes, password_hash: bytes, password: str) -> bool:
 class BusinessLogic:
     def __init__(self, data):
         self.data = data
+        self.startdate = self.data["startdate"]
+        self.enddate = self.data["enddate"]
 
     def calculate_points(self):
-        instance = db.DatabaseHandler()
+        date_format = "%Y-%m-%d"
+        date1 = datetime.strptime(str(self.startdate), date_format)
+        date2 = datetime.strptime(str(self.enddate), date_format)
+        delta = date2 - date1
+        days = int(delta.days)
+        days += 1
+
+        database_points = db.DatabaseHandler('users', self.data).retrieve_user_points()
+        # add points
+        weeks = days / 7
+        points = weeks * 25
+        total_points = float(database_points) + points
+        self.data["points"] = total_points
+
+        db.DatabaseHandler('users', self.data).update_user_points()
+
+        print(f"Points: {total_points}")
+        print(f"Days: {days}")
+        return total_points
 
 
 class Register:
+    """
+    Performs the user register
+    MVC - Controller
+    """
     def __init__(self, table, data):
         self.table = table
         self.data = data
 
     def init_register(self):
+        """
+        Inserts user data into the database table
+        """
         try:
             assert type(self.data) is dict
             try:
@@ -51,6 +78,9 @@ class Register:
             return e
 
     def register_cleanup(self):
+        """
+        Resets register form on GUI
+        """
         gV.RUSERNAME.set("")
         gV.FIRSTNAME.set("")
         gV.LASTNAME.set("")
@@ -61,11 +91,18 @@ class Register:
 
 
 class Login:
+    """
+    Performs the login
+    MVC - Controller
+    """
     def __init__(self, table, data):
         self.table = table
         self.data = data
 
     def init_login(self):
+        """
+        Performs the login user check and returns the result
+        """
         try:
             assert type(self.data) is dict
             try:
@@ -73,8 +110,6 @@ class Login:
             except Exception as e:
                 print(e)
                 raise Exception("User does not exist")
-            # user does exist
-            #db.LoginHandler('user', self.data)
 
         except AssertionError as e:
             return e
@@ -83,4 +118,3 @@ class Login:
         gV.USERNAME.get()
         gV.PASSWORD.get()
         self.data = {}
-

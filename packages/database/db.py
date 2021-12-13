@@ -1,12 +1,14 @@
 import sqlite3
 from sqlite3 import Error
 
-from packages.business import main as main
-from packages.business import errors
 from packages.business import globalVariables as gv
+from packages.business import main as main
 
 
 def get_userid():
+    """
+    Retrieves user ID from global variables
+    """
     con = sqlite3.connect(r"../../sqlite/db/database.db")
     cursor = con.cursor()
     try:
@@ -17,18 +19,25 @@ def get_userid():
 
 
 class DatabaseHandler:
+    """
+    Class to perform database operations
+    """
     def __init__(self, table, data):
         self.table = table
         self.data = data
 
     def check_bookings(self):
+        """
+        Retrieves number of bookings for user
+        Currently Unused
+        """
         con = sqlite3.connect(r"../../sqlite/db/database.db")
         cursor = con.cursor()
         try:
             if 'bookings' in self.table:
                 cursor.execute("SELECT * FROM " + self.table + " WHERE userId = ?", (self.data["userid"]))
                 i = 0
-                for e in cursor.fetchall():
+                while cursor.fetchall():
                     i += 1
                 print(f"{i} row(s) found")
                 return i
@@ -39,11 +48,15 @@ class DatabaseHandler:
             print(f"{Colour.RED} {Colour.BOLD} BOOKINGS CHECK ERROR: {str(e)} {Colour.END}")
 
     def retrieve_booking(self):
+        """
+        Checks for bookings for user
+        """
         con = sqlite3.connect(r"../../sqlite/db/database.db")
         cursor = con.cursor()
         try:
             if 'bookings' in self.table:
-                cursor.execute("SELECT startDate, endDate FROM " + self.table + " WHERE userId = ?", (self.data["userid"]))
+                cursor.execute("SELECT startDate, endDate FROM " + self.table + " WHERE userId = ?",
+                               (self.data["userid"]))
                 if cursor.fetchall() is not None:
                     return cursor.fetchall()
             else:
@@ -52,19 +65,24 @@ class DatabaseHandler:
             print(f"{Colour.RED} {Colour.BOLD} BOOKINGS RETRIEVE ERROR: {str(e)} {Colour.END}")
 
     def retrieve_user_points(self):
+        """
+        Returns users points from database
+        """
         con = sqlite3.connect(r"../../sqlite/db/database.db")
         cursor = con.cursor()
         try:
             if 'users' in self.table:
                 cursor.execute("SELECT points FROM " + self.table + " WHERE userId = ?", (self.data["userid"]))
-                if cursor.fetchall() is not None:
-                    return cursor.fetchall()[0]
+                return str(cursor.fetchone()[0])
             else:
                 raise Exception("No user / points found")
         except Error as e:
             print(f"{Colour.RED} {Colour.BOLD} POINTS RETRIEVE ERROR: {str(e)} {Colour.END}")
 
     def add_booking(self):
+        """
+        Adds an entry into the booking table
+        """
         try:
             con = sqlite3.connect(r"../../sqlite/db/database.db")
             cursor = con.cursor()
@@ -79,13 +97,32 @@ class DatabaseHandler:
 
         print("add_booking finished")
 
+    def update_user_points(self):
+        """
+        Updates the users points in the database
+        """
+        con = sqlite3.connect(r"../../sqlite/db/database.db")
+        cursor = con.cursor()
+        try:
+            cursor.execute("UPDATE users SET points = ? WHERE userId = ?", (self.data["points"], self.data["userid"]))
+            con.commit()
+            print(f"{Colour.GREEN} {Colour.BOLD} Points update successful. {Colour.END}")
+        except Error as e:
+            print(f"{Colour.RED} {Colour.BOLD} POINTS UPDATE ERROR: {str(e)} {Colour.END}")
+
 
 class DataCheck:
+    """
+    Performs comparisons on database tables
+    """
     def __init__(self, table, data):
         self.table = table
         self.data = data
 
     def users_check(self):
+        """
+        Checks if a user already exists in the database
+        """
         conn = sqlite3.connect(r"../../sqlite/db/database.db")
         cursor = conn.cursor()
         print(self.data["username"])
@@ -95,17 +132,24 @@ class DataCheck:
             raise Exception("User already exists")
 
     def login_check(self):
+        """
+        Performs the login, compares user-provided password and username with those stored in the database
+        """
         conn = sqlite3.connect(r"..\..\sqlite\db\database.db")
         cursor = conn.cursor()
         cursor.execute("SELECT salt, hashedPassword FROM users WHERE username = ?",
                        ([self.data["username"]]))
         # if cursor.fetchall() is None:
-            # raise Exception("User does not exist in database")
+        # raise Exception("User does not exist in database")
         salt, password = cursor.fetchone()
         assert main.check_password(salt, password, self.data["password"])
 
 
 class RegisterHandler:
+    """
+    Handles registering a user into the database
+    MVC - Controller
+    """
     def __init__(self, table, data, salt, password):
         self.table = table
         self.data = data
@@ -113,6 +157,9 @@ class RegisterHandler:
         self.password = password
 
     def perform_register(self):
+        """
+        Attempts to insert user data into database table
+        """
         try:
             conn = sqlite3.connect(r"../../sqlite/db/database.db")
             cursor = conn.cursor()

@@ -1,10 +1,13 @@
 import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkcalendar import Calendar, DateEntry
+
+from tkcalendar import DateEntry
+
+from packages.business import errors
 from packages.business import globalVariables as gv
+from packages.business import main
 from packages.database import db
-from packages.business import  errors
 
 
 def database():
@@ -45,32 +48,39 @@ def create_dashboard():
 
 def bookings_tab():
     con = sqlite3.connect(r"../../sqlite/db/database.db")
-    cursor = con.cursor()
-    cursor.execute("SELECT city, vehicleType, startDate, endDate FROM bookings WHERE userid = ?", (db.get_userid(),))
+    new_cursor = con.cursor()
+    new_cursor.execute("SELECT city, vehicleType, startDate, endDate FROM bookings WHERE userid = ?",
+                       (db.get_userid(),))
+    result = new_cursor.fetchall()
+    print(len(result))
     i = 1
-    tk.Label(gv.booking_frame, text="Location").grid(row=0, column=0)
-    tk.Label(gv.booking_frame, text="Vehicle Type").grid(row=0, column=1)
-    tk.Label(gv.booking_frame, text="Rent Date").grid(row=0, column=2)
-    tk.Label(gv.booking_frame, text="Return Date").grid(row=0, column=3)
 
-    for e in cursor.fetchall():
-        for j in range(len(e)):
-            box = tk.Entry(gv.booking_frame, justify='center')
-            box.grid(row=i, column=j)
-            box.insert(tk.END, e[j])
+    if len(result) > 0:
+        tk.Label(gv.booking_frame, text="Location").grid(row=0, column=0)
+        tk.Label(gv.booking_frame, text="Vehicle Type").grid(row=0, column=1)
+        tk.Label(gv.booking_frame, text="Rent Date").grid(row=0, column=2)
+        tk.Label(gv.booking_frame, text="Return Date").grid(row=0, column=3)
+        for e in result:
+            for j in range(len(e)):
+                box = tk.Entry(gv.booking_frame, justify='center')
+                box.grid(row=i, column=j)
+                box.insert(tk.END, e[j])
+    else:
+        tk.Label(gv.booking_frame, text="You have no vehicles currently on loan").grid(row=1, column=0)
 
 
 def rent_tab():
     gv.rent_data = {}
-    a = tk.Label(gv.rent_frame, text="Location").grid(row=0, column=0)
-    b = tk.Label(gv.rent_frame, text="Vehicle Type").grid(row=1, column=0)
-    c = tk.Label(gv.rent_frame, text="Start Date").grid(row=2, column=0)
-    d = tk.Label(gv.rent_frame, text="End Date").grid(row=3, column=0)
+    tk.Label(gv.rent_frame, text="Location").grid(row=0, column=0)
+    tk.Label(gv.rent_frame, text="Vehicle Type").grid(row=1, column=0)
+    tk.Label(gv.rent_frame, text="Start Date").grid(row=2, column=0)
+    tk.Label(gv.rent_frame, text="End Date").grid(row=3, column=0)
 
     # location dropdown
     selected_location = tk.StringVar()
     location_dropdown = ttk.Combobox(gv.rent_frame, textvariable=selected_location)
-    location_dropdown['values'] = ('Cork',
+    location_dropdown['values'] = ('Select Location',
+                                   'Cork',
                                    'Limerick',
                                    'Dublin',
                                    'Waterford')
@@ -80,7 +90,8 @@ def rent_tab():
     # vehicle dropdown
     selected_vehicle = tk.StringVar()
     vehicle_dropdown = ttk.Combobox(gv.rent_frame, textvariable=selected_vehicle)
-    vehicle_dropdown['values'] = ('Car',
+    vehicle_dropdown['values'] = ('Select Vehicle',
+                                  'Car',
                                   'Small Van',
                                   'Big Van',
                                   '7 Seater',
@@ -113,24 +124,46 @@ def rent_tab():
 
 def rent_car(location, vehicle, startdate, enddate):
     data = gv.rent_data
-    data = {
-        "userid": db.get_userid(),
-        "location": location,
-        "vehicle": vehicle,
-        "startdate": startdate,
-        "enddate": enddate
-    }
-
-    instance = db.DatabaseHandler('bookings', data)
-    try:
-        if instance.check_bookings() <= 1:
-            raise errors.MaxLoansReached
-        instance.add_booking()
-    except (errors.MaxLoansReached, AssertionError) as e:
-        print(f"{db.Colour.RED} {db.Colour.BOLD} User already has a vehicle on loan {db.Colour.END}")
+    if location == "" or location == "Select Location" or  vehicle == "" or vehicle == "Select Vehicle":
         lbl_text = tk.Label(gv.rent_frame)
         lbl_text.grid(row=4, columnspan=2)
+        lbl_text.config(text="")
+        lbl_text.config(text="Please fill out all fields", fg="red")
+        return
+    else:
+        data = {
+            "userid": db.get_userid(),
+            "location": location,
+            "vehicle": vehicle,
+            "startdate": startdate,
+            "enddate": enddate
+        }
+
+    instance = db.DatabaseHandler('bookings', data)
+    lbl_text = tk.Label(gv.rent_frame)
+    lbl_text.grid(row=4, columnspan=2)
+    try:
+        if instance.check_bookings() == 1:
+            raise errors.MaxLoansReached
+        instance.add_booking()
+        points_instance = main.BusinessLogic(data)
+        points_earned = points_instance.calculate_points()
+        popupmsg("Booking Successful", f"You earned {points_earned:.2f} points!")
+        bookings_tab()
+    except (errors.MaxLoansReached, AssertionError):
+        print(f"{db.Colour.RED} {db.Colour.BOLD} User already has a vehicle on loan {db.Colour.END}")
         lbl_text.config(text="You already have a vehicle on loan", fg="red")
+
+
+def popupmsg(title, msg):
+    popup = tk.Tk()
+    popup.geometry("300x90")
+    popup.wm_title(title)
+    label = ttk.Label(popup, text=msg)
+    label.pack(side="top", fill="x", pady=10)
+    button = ttk.Button(popup, text="Okay", command=popup.destroy)
+    button.pack()
+    popup.mainloop()
 
 
 def populate_account():
