@@ -22,6 +22,7 @@ class DatabaseHandler:
     """
     Class to perform database operations
     """
+
     def __init__(self, table, data):
         self.table = table
         self.data = data
@@ -119,8 +120,6 @@ class DatabaseHandler:
         except Error as e:
             print(f"{Colour.RED} {Colour.BOLD} BOOKINGS CHECK ERROR: {str(e)} {Colour.END}")
 
-        print("add_booking finished")
-
     def update_user_points(self):
         """
         Updates the users points in the database
@@ -139,6 +138,7 @@ class DataCheck:
     """
     Performs comparisons on database tables
     """
+
     def __init__(self, table, data):
         self.table = table
         self.data = data
@@ -174,6 +174,7 @@ class RegisterHandler:
     Handles registering a user into the database
     MVC - Controller
     """
+
     def __init__(self, table, data, salt, password):
         self.table = table
         self.data = data

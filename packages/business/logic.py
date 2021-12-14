@@ -58,8 +58,6 @@ class BusinessLogic:
         else:
             raise errors.NegativeDaysReached
 
-        print(f"Points: {total_points}")
-        print(f"Days: {days}")
         return total_points
 
 
