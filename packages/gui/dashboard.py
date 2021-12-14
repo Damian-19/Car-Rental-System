@@ -6,7 +6,7 @@ from tkcalendar import DateEntry
 
 from packages.business import errors
 from packages.business import globalVariables as gv
-from packages.business import main
+from packages.business import logic
 from packages.database import db
 
 
@@ -27,17 +27,14 @@ def create_dashboard():
 
     gv.booking_frame = tk.Frame(tabs)
     gv.rent_frame = tk.Frame(tabs)
-    locations_frame = tk.Frame(tabs)
     gv.account_frame = tk.Frame(tabs)
 
     gv.booking_frame.grid(column=0, row=0)
     gv.rent_frame.grid(column=1, row=0)
-    locations_frame.grid(column=2, row=0)
     gv.account_frame.grid(column=3, row=0)
 
     tabs.add(gv.booking_frame, text="Bookings")
     tabs.add(gv.rent_frame, text="Rent Car")
-    tabs.add(locations_frame, text="Locations")
     tabs.add(gv.account_frame, text="Account")
 
     tabs.grid(column=0, row=1)
@@ -146,7 +143,7 @@ def rent_car(location, vehicle, startdate, enddate):
         if instance.check_bookings() == 1:
             raise errors.MaxLoansReached
         instance.add_booking()
-        points_instance = main.BusinessLogic(data)
+        points_instance = logic.BusinessLogic(data)
         points_earned = points_instance.calculate_points()
         popupmsg("Booking Successful", f"You earned {points_earned:.2f} points!")
         bookings_tab()

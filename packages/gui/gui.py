@@ -1,8 +1,9 @@
 import sqlite3
 import tkinter as tk
 
-from packages.business import main as main, globalVariables as gV
+from packages.business import logic as main, globalVariables as gV
 from packages.gui import dashboard as dashboardfunctions
+from packages.database import db
 
 global conn, cursor
 
@@ -79,8 +80,8 @@ def dashboard():
     gV.root.withdraw()
     gV.home = tk.Toplevel()
     gV.home.title("Dashboard")
-    width = 600
-    height = 500
+    width = 300
+    height = 250
     screen_width = gV.root.winfo_screenwidth()
     screen_height = gV.root.winfo_screenheight()
     x = (screen_width / 2) - (width / 2)
@@ -88,11 +89,11 @@ def dashboard():
     gV.root.resizable(0, 0)
     gV.home.geometry("%dx%d+%d+%d" % (width, height, x, y))
     # retrieve users firstname
-    database()
-    cursor.execute("SELECT Firstname FROM users WHERE username = ? ", (gV.USERNAME.get(),))
-    name = cursor.fetchone()
-    name = str(name).replace("(", "").replace(")", "").replace("'", "").replace(",", "")
-    tk.Label(gV.home, text="Welcome, " + name, font=('calibri', 20)).grid(column=0, row=0)
+    data = {
+        "userid": db.get_userid()
+    }
+    name = db.DatabaseHandler('users', data).get_firstname()
+    tk.Label(gV.home, text=f"Welcome, {str(name)}", font=('calibri', 20)).grid(column=0, row=0)
     dashboardfunctions.create_dashboard()
     tk.Button(gV.home, text='Sign Out', command=signout).grid(column=0, row=2)
 
@@ -169,7 +170,7 @@ lbl_text.grid(row=3, columnspan=2)
 
 button = tk.Button(login_frame, text="Login", command=login)
 button.grid(column=0, row=4, columnspan=2, sticky="we", padx=10, pady=10)
-# button.bind('<Return>', login())
+login_frame.bind('<Return>', login())
 
 lbl_register_text = tk.Label(register_frame)
 lbl_register_text.grid(row=7, columnspan=2)

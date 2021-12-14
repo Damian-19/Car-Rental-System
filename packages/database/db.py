@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 from packages.business import globalVariables as gv
-from packages.business import main as main
+from packages.business import logic as main
 
 
 def get_userid():
@@ -25,6 +25,18 @@ class DatabaseHandler:
     def __init__(self, table, data):
         self.table = table
         self.data = data
+
+    def get_firstname(self):
+        """
+        Retrieves firstname from database
+        """
+        con = sqlite3.connect(r"../../sqlite/db/database.db")
+        cursor = con.cursor()
+        try:
+            cursor.execute("SELECT Firstname FROM users WHERE userid = ?", (self.data["userid"]))
+            return str(cursor.fetchone()[0])
+        except Error as e:
+            print(f"{Colour.RED} {Colour.BOLD} GET FIRSTNAME ERROR: {str(e)} {Colour.END}")
 
     def check_bookings(self):
         """
