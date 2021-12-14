@@ -27,6 +27,7 @@ def begin_edit(button_name, save_info_button):
 
 def create_dashboard():
     tabs = ttk.Notebook(gv.home)
+    gv.home.resizable(0, 0)
 
     # creates a tabs layout for pages on the dashboard
     gv.booking_frame = tk.Frame(tabs)
