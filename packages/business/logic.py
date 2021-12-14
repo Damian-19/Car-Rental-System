@@ -11,12 +11,18 @@ from packages.business import errors
 
 # adapted from Mark Amery - https://stackoverflow.com/a/56915300
 def hash_password(password: str) -> Tuple[bytes, bytes]:
+    """
+    performs hash on password entered by user
+    """
     salt = os.urandom(16)
     password_hash = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 1000000)
     return salt, password_hash
 
 
 def check_password(salt: bytes, password_hash: bytes, password: str) -> bool:
+    """
+    performs check on password entered by user
+    """
     return hmac.compare_digest(
         password_hash,
         hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 1000000)
@@ -30,6 +36,9 @@ class BusinessLogic:
         self.enddate = self.data["enddate"]
 
     def calculate_points(self):
+        """
+        Calulates the membership points earned when user rents car
+        """
         date_format = "%Y-%m-%d"
         date1 = datetime.strptime(str(self.startdate), date_format)
         date2 = datetime.strptime(str(self.enddate), date_format)
