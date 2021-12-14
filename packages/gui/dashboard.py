@@ -1,3 +1,4 @@
+# importing various required packages
 import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -11,7 +12,7 @@ from packages.database import db
 
 
 def database():
-    # create database connection
+    # create database connection.
     global conn, cursor
     conn = sqlite3.connect(r"../../sqlite/db/database.db")
     cursor = conn.cursor()
@@ -21,14 +22,18 @@ def begin_edit(button_name, save_info_button):
     button_name.config(state='normal')
     save_info_button.config(state='normal')
 
+# create dashboard page (displayed after login)
+
 
 def create_dashboard():
     tabs = ttk.Notebook(gv.home)
 
+    # creates a tabs layout for pages on the dashboard
     gv.booking_frame = tk.Frame(tabs)
     gv.rent_frame = tk.Frame(tabs)
     gv.account_frame = tk.Frame(tabs)
 
+    # ordering the tabs through a grid based process
     gv.booking_frame.grid(column=0, row=0)
     gv.rent_frame.grid(column=1, row=0)
     gv.account_frame.grid(column=3, row=0)
@@ -42,7 +47,7 @@ def create_dashboard():
     rent_tab()
     bookings_tab()
 
-
+# bookings page function which allows the user to order a car
 def bookings_tab():
     con = sqlite3.connect(r"../../sqlite/db/database.db")
     new_cursor = con.cursor()
