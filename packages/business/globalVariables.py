@@ -1,5 +1,7 @@
 import tkinter as tk
-
+"""
+global variables used in multiple files
+"""
 root = tk.Tk()
 
 # login variables
