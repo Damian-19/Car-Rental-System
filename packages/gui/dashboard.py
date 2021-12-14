@@ -49,11 +49,11 @@ def bookings_tab():
     new_cursor.execute("SELECT startDate, endDate FROM bookings WHERE userid = ?",
                        (db.get_userid(),))
     result = new_cursor.fetchall()
-    result = list(result[0])
-    result[0] = result[0].replace("-", "/")
-    result[1] = result[1].replace("-", "/")
 
     if len(result) > 0:
+        result = list(result[0])
+        result[0] = result[0].replace("-", "/")
+        result[1] = result[1].replace("-", "/")
         tk.Label(gv.booking_frame, text="Current Bookings").grid(row=0, column=0)
         tk.Label(gv.booking_frame, text=f"  {result[0]} - {result[1]}").grid(row=2, column=0)
 
