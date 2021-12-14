@@ -7,7 +7,8 @@ from packages.database import db
 
 global conn, cursor
 
-# frames
+# The frames below use various elements of the tkinter package to create the GUI panels
+# These 5 lines create the main panel in which the login and register frames are contained side by side.
 main_frame = tk.Frame(gV.root).grid(column=0, row=0)
 login_frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
 login_frame.grid(column=0, row=0, sticky='nsew', padx=2, pady=2)
