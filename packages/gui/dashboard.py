@@ -1,3 +1,4 @@
+# importing various required packages
 import sqlite3
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -11,7 +12,7 @@ from packages.database import db
 
 
 def database():
-    # create database connection
+    # create database connection.
     global conn, cursor
     conn = sqlite3.connect(r"../../sqlite/db/database.db")
     cursor = conn.cursor()
@@ -21,15 +22,19 @@ def begin_edit(button_name, save_info_button):
     button_name.config(state='normal')
     save_info_button.config(state='normal')
 
+# create dashboard page (displayed after login)
+
 
 def create_dashboard():
     tabs = ttk.Notebook(gv.home)
     gv.home.resizable(0, 0)
 
+    # creates a tabs layout for pages on the dashboard
     gv.booking_frame = tk.Frame(tabs)
     gv.rent_frame = tk.Frame(tabs)
     gv.account_frame = tk.Frame(tabs)
 
+    # ordering the tabs through a grid based process
     gv.booking_frame.grid(column=0, row=0)
     gv.rent_frame.grid(column=1, row=0)
     gv.account_frame.grid(column=3, row=0)
@@ -43,7 +48,7 @@ def create_dashboard():
     rent_tab()
     bookings_tab()
 
-
+# bookings page function which allows the user to see the cars they are currently renting
 def bookings_tab():
     con = sqlite3.connect(r"../../sqlite/db/database.db")
     new_cursor = con.cursor()
@@ -61,7 +66,7 @@ def bookings_tab():
     else:
         tk.Label(gv.booking_frame, text="You have no vehicles currently on loan").grid(row=1, column=0)
 
-
+# function to rent a car, given the options 'location' and 'Vehicle' and the desired dates
 def rent_tab():
     gv.rent_data = {}
     tk.Label(gv.rent_frame, text="Location").grid(row=0, column=0)
@@ -80,7 +85,7 @@ def rent_tab():
     location_dropdown['state'] = 'readonly'
     location_dropdown.grid(row=0, column=1)
 
-    # vehicle dropdown
+    # vehicle dropdown which gives avaliable vehicle options
     selected_vehicle = tk.StringVar()
     vehicle_dropdown = ttk.Combobox(gv.rent_frame, textvariable=selected_vehicle)
     vehicle_dropdown['values'] = ('Select Vehicle',
@@ -150,6 +155,8 @@ def rent_car(location, vehicle, startdate, enddate):
         print(f"{db.Colour.RED} {db.Colour.BOLD} Please select a valid date range {db.Colour.END}")
         popupmsg("Warning", f"Please select a valid date range")
 
+# function for the pop up message showing which shows user how many points they earned from booking
+
 
 def popupmsg(title, msg):
     popup = tk.Tk()
@@ -161,10 +168,12 @@ def popupmsg(title, msg):
     button.pack()
     popup.mainloop()
 
+# Funcion to edit account details
+
 
 def populate_account():
     database()
-    # first name
+    # creates option to edit first name in the account tab of the dashboard
     cursor.execute("SELECT Firstname FROM users WHERE username = ? ", (gv.USERNAME.get(),))
     name = cursor.fetchone()
     name = str(name).replace("(", "").replace(")", "").replace("'", "").replace(",", "")
@@ -182,7 +191,7 @@ def populate_account():
     name_button = tk.Button(gv.account_frame, text="Edit", command=lambda: begin_edit(first_name, save_button))
     name_button.grid(column=2, row=0, columnspan=1, sticky="we", padx=5, pady=5)
 
-    # last name
+    # creates option to edit last name in the account tab of the dashboard
     cursor.execute("SELECT Lastname FROM users WHERE username = ? ", (gv.USERNAME.get(),))
     name = cursor.fetchone()
     name = str(name).replace("(", "").replace(")", "").replace("'", "").replace(",", "")
