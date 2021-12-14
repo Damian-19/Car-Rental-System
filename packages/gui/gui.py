@@ -1,24 +1,24 @@
 import sqlite3
 import tkinter as tk
-from sqlite3 import Error
 
-import dashboard as dashboardfunctions
-import globalVariables as gV
-import main as main
+from packages.business import logic as main, globalVariables as gV
+from packages.gui import dashboard as dashboardfunctions
+from packages.database import db
 
 global conn, cursor
 
-# frames
+# The frames below use various elements of the tkinter package to create the GUI panels
+# These 5 lines create the main panel in which the login and register frames are contained side by side.
 main_frame = tk.Frame(gV.root).grid(column=0, row=0)
 login_frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
 login_frame.grid(column=0, row=0, sticky='nsew', padx=2, pady=2)
 register_frame = tk.Frame(main_frame, bd=2, highlightbackground="black", highlightthickness=2)
 register_frame.grid(column=1, row=0, sticky='nsew', padx=2, pady=2)
-# ==============================LABELS=========================================
+
 title = tk.Label(login_frame, text="Login", font=('arial', 15))
 title.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
 
-# login_frame 1 - login
+# login_frame 1 - login panel that contains fields for username and password and login button
 username_label = tk.Label(login_frame, text="Username")
 username_label.grid(column=0, row=1, padx=10, pady=10)
 
@@ -31,7 +31,7 @@ password_label.grid(column=0, row=2, padx=10, pady=10)
 password_input = tk.Entry(login_frame, textvariable=gV.PASSWORD, show="*")
 password_input.grid(column=1, row=2)
 
-# register_frame - register
+# register_frame - register panel that contains several fields to be filled to create the account
 title = tk.Label(register_frame, text="Register", font=('arial', 15))
 title.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
 
@@ -71,98 +71,105 @@ password_label.grid(column=0, row=6, padx=10, pady=10)
 password_input = tk.Entry(register_frame, textvariable=gV.RPASSWORD, show="*")
 password_input.grid(column=1, row=6)
 
+# sign out function
 
-def back():
+
+def signout():
     gV.home.destroy()
     gV.root.deiconify()
+
+# dashboard function which is called by dashboard file in order to create desired layout,
+# size and parts
 
 
 def dashboard():
     gV.root.withdraw()
     gV.home = tk.Toplevel()
     gV.home.title("Dashboard")
-    width = 600
-    height = 500
+    width = 300
+    height = 250
     screen_width = gV.root.winfo_screenwidth()
     screen_height = gV.root.winfo_screenheight()
     x = (screen_width / 2) - (width / 2)
     y = (screen_height / 2) - (height / 2)
     gV.root.resizable(0, 0)
     gV.home.geometry("%dx%d+%d+%d" % (width, height, x, y))
-    # retrieve users firstname
-    database()
-    cursor.execute("SELECT Firstname FROM users WHERE username = ? ", (gV.USERNAME.get(),))
-    name = cursor.fetchone()
-    name = str(name).replace("(", "").replace(")", "").replace("'", "").replace(",", "")
-    tk.Label(gV.home, text="Welcome, " + name, font=('calibri', 20)).grid(column=0, row=0)
+    # retrieve users firstname from database in order to display the name on the dashboard
+    data = {
+        "userid": db.get_userid()
+    }
+    name = db.DatabaseHandler('users', data).get_firstname()
+    tk.Label(gV.home, text=f"Welcome, {str(name)}", font=('calibri', 20)).grid(column=0, row=0)
     dashboardfunctions.create_dashboard()
-    tk.Button(gV.home, text='Sign Out', command=back).grid(column=0, row=2)
+    tk.Button(gV.home, text='Sign Out', command=signout).grid(column=0, row=2)
 
 
 def database():
     # create database connection
     global conn, cursor
-    conn = sqlite3.connect(r"sqlite/db/database.db")
+    conn = sqlite3.connect(r"../../sqlite/db/database.db")
     cursor = conn.cursor()
 
 
 def login():
+    """
+    function to login a user
+    current params are all retrieved from global variables
+    MVC - View
+    """
     database()
     if gV.USERNAME.get() == "" or gV.PASSWORD.get() == "":
         lbl_text.config(text="Please fill out both fields.", fg="red")
     else:
-        cursor.execute("SELECT salt, hashedPassword FROM users WHERE username = ? ",
-                       (gV.USERNAME.get(),))
-        salt, password = cursor.fetchone()
-        print(type(salt))
-        # salt = salt.encode(encoding='UTF=8')
-        print(type(salt))
-        print(type(password))
-        try:
-            assert main.check_password(salt, password, gV.PASSWORD.get())
-            dashboard()
-            gV.USERNAME.set("")
-            gV.PASSWORD.set("")
-            lbl_text.config(text="")
-        except AssertionError:
-            lbl_text.config(text="Invalid username or password", fg="red")
-            gV.USERNAME.set("")
-            gV.PASSWORD.set("")
-    cursor.close()
-    conn.close()
+        # place user-entered data into a dict
+        logindata = {
+            "username": gV.USERNAME.get(),
+            "password": gV.PASSWORD.get()
+        }
+        # create instance of Login class
+        instance = main.Login('users', logindata)
+    try:
+        # attempt to perform login
+        instance.init_login()
+        instance.login_cleanup()
+        dashboard()
+        # exception created to check for invalid username or password
+    except Exception as e:
+        print(e)
+        lbl_text.config(text="Invalid username or password", fg="red")
 
 
 def register():
-    database()
+    """
+    function to register a user in the database
+    current params are all retrieved from global variables
+    MVC - View
+    """
+    # check all fields are filled in. if not then the error appears\\
     if gV.RUSERNAME.get() == "" or gV.RPASSWORD.get() == "" or gV.FIRSTNAME.get() == "" or gV.LASTNAME.get() == "" or \
             gV.EMAIL.get() == "" or gV.PHONENUMBER.get() == "":
-        lbl_text.config(text="Please fill in all fields.", fg="red")
+        lbl_register_text.config(text="Please fill in all fields.", fg="red")
+    # if all fields are filled in then perform register
     else:
-        cursor.execute("SELECT * FROM `users` WHERE `username` = ? AND `email` = ?", (gV.RUSERNAME.get(),
-                                                                                      gV.EMAIL.get()))
-        if cursor.fetchone() is not None:
-            lbl_text.config(text="User already exists")
-        else:
-            salt, password_hash = main.hash_password(gV.RPASSWORD.get())
-            try:
-                cursor.execute(
-                    "INSERT INTO 'users' (username, firstName, lastName, email, phoneNumber, points, salt, "
-                    "hashedPassword) VALUES(?,?,?,?,?,?,?,?)",
-                    (gV.RUSERNAME.get(), gV.FIRSTNAME.get(), gV.LASTNAME.get(), gV.EMAIL.get(), gV.PHONENUMBER.get(), 0,
-                     salt,
-                     password_hash))
-                conn.commit()
-                lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
-                gV.RUSERNAME.set("")
-                gV.FIRSTNAME.set("")
-                gV.LASTNAME.set("")
-                gV.EMAIL.set("")
-                gV.PHONENUMBER.set("")
-                gV.RPASSWORD.set("")
-            except Error as e:
-                print("Error: ", e)
-    cursor.close()
-    conn.close()
+        data = {
+            "username": gV.RUSERNAME.get(),
+            "firstname": gV.FIRSTNAME.get(),
+            "lastname": gV.LASTNAME.get(),
+            "email": gV.EMAIL.get(),
+            "phone": gV.PHONENUMBER.get(),
+            "password": gV.RPASSWORD.get()
+        }
+        instance = main.Register('users', data)
+        try:
+            instance.init_register()
+            instance.register_cleanup()
+            # successful register
+            lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
+            # if register failed then run exception
+        except Exception as e:
+            print(e)
+            lbl_register_text.config(text="Username or email already in use", fg='red')
+        print("Reached end of register function")
 
 
 lbl_text = tk.Label(login_frame)
@@ -170,7 +177,7 @@ lbl_text.grid(row=3, columnspan=2)
 
 button = tk.Button(login_frame, text="Login", command=login)
 button.grid(column=0, row=4, columnspan=2, sticky="we", padx=10, pady=10)
-# button.bind('<Return>', login())
+button.bind('<Return>', login)
 
 lbl_register_text = tk.Label(register_frame)
 lbl_register_text.grid(row=7, columnspan=2)

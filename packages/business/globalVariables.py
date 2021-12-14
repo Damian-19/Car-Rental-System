@@ -1,5 +1,7 @@
 import tkinter as tk
-
+"""
+global variables used in multiple files
+"""
 root = tk.Tk()
 
 # login variables
@@ -14,4 +16,4 @@ LASTNAME = tk.StringVar()
 EMAIL = tk.StringVar()
 PHONENUMBER = tk.StringVar()
 
-global home, account_frame, rent_frame
+global home, account_frame, rent_frame, booking_frame, rent_data
