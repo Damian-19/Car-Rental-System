@@ -137,14 +137,17 @@ def rent_car(location, vehicle, startdate, enddate):
     try:
         if instance.check_bookings() == 1:
             raise errors.MaxLoansReached
-        instance.add_booking()
         points_instance = logic.BusinessLogic(data)
         points_earned = points_instance.calculate_points()
-        popupmsg("Booking Successful", f"You earned {points_earned:.2f} points!")
+        instance.add_booking()
         bookings_tab()
+        popupmsg("Booking Successful", f"You earned {points_earned:.2f} points!")
     except (errors.MaxLoansReached, AssertionError):
         print(f"{db.Colour.RED} {db.Colour.BOLD} User already has a vehicle on loan {db.Colour.END}")
         lbl_text.config(text="You already have a vehicle on loan", fg="red")
+    except errors.NegativeDaysReached:
+        print(f"{db.Colour.RED} {db.Colour.BOLD} Please select a valid date range {db.Colour.END}")
+        popupmsg("Warning", f"Please select a valid date range")
 
 
 def popupmsg(title, msg):

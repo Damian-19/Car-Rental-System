@@ -6,6 +6,7 @@ from typing import Tuple
 
 import packages.business.globalVariables as gV
 import packages.database.db as db
+from packages.business import errors
 
 
 # adapted from Mark Amery - https://stackoverflow.com/a/56915300
@@ -41,9 +42,12 @@ class BusinessLogic:
         weeks = days / 7
         points = weeks * 25
         total_points = float(database_points) + points
-        self.data["points"] = total_points
+        if total_points > 0:
+            self.data["points"] = total_points
 
-        db.DatabaseHandler('users', self.data).update_user_points()
+            db.DatabaseHandler('users', self.data).update_user_points()
+        else:
+            raise errors.NegativeDaysReached
 
         print(f"Points: {total_points}")
         print(f"Days: {days}")

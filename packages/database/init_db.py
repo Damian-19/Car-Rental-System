@@ -40,22 +40,6 @@ def insert_row(con, table, row):
         print("Error: ", e)
 
 
-"""def remove_row(con, table, row):
-    try:
-        if 'locations' in table:
-            pass
-        elif 'bookings' in table:
-            pass
-
-        ex = con.cursor()
-        ex.execute(sql, row)
-        con.commit()
-        print("Row removed")
-        return ex.lastrowid
-    except Error as e:
-        print("Error: ", e)"""
-
-
 def update_row(con, table, row):
     try:
         if 'locations' in table:
@@ -114,6 +98,7 @@ def main():
     insert_row(con, "locations", row)
     row = ('dublin', 'Dublin', 'University College Dublin, Dublin City')
     insert_row(con, "locations", row)
+
 
 if __name__ == '__main__':
     main()
