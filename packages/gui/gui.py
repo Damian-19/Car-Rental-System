@@ -18,7 +18,7 @@ register_frame.grid(column=1, row=0, sticky='nsew', padx=2, pady=2)
 title = tk.Label(login_frame, text="Login", font=('arial', 15))
 title.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
 
-# login_frame 1 - login
+# login_frame 1 - login panel that contains fields for username and password and login button
 username_label = tk.Label(login_frame, text="Username")
 username_label.grid(column=0, row=1, padx=10, pady=10)
 
@@ -31,7 +31,7 @@ password_label.grid(column=0, row=2, padx=10, pady=10)
 password_input = tk.Entry(login_frame, textvariable=gV.PASSWORD, show="*")
 password_input.grid(column=1, row=2)
 
-# register_frame - register
+# register_frame - register panel that contains several fields to be filled to create the account
 title = tk.Label(register_frame, text="Register", font=('arial', 15))
 title.grid(column=0, row=0, columnspan=2, padx=10, pady=10)
 
