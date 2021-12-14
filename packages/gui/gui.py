@@ -133,6 +133,7 @@ def login():
         instance.init_login()
         instance.login_cleanup()
         dashboard()
+        # exception created to check for invalid username or password
     except Exception as e:
         print(e)
         lbl_text.config(text="Invalid username or password", fg="red")
@@ -144,11 +145,11 @@ def register():
     current params are all retrieved from global variables
     MVC - View
     """
-    # check all fields are filled in
+    # check all fields are filled in. if not then the error appears\\
     if gV.RUSERNAME.get() == "" or gV.RPASSWORD.get() == "" or gV.FIRSTNAME.get() == "" or gV.LASTNAME.get() == "" or \
             gV.EMAIL.get() == "" or gV.PHONENUMBER.get() == "":
         lbl_register_text.config(text="Please fill in all fields.", fg="red")
-    # perform register
+    # if all fields are filled in then perform register
     else:
         data = {
             "username": gV.RUSERNAME.get(),
@@ -164,7 +165,7 @@ def register():
             instance.register_cleanup()
             # successful register
             lbl_register_text.config(text="Signup successful. Please Login.", fg="green")
-            # register failed
+            # if register failed then run exception
         except Exception as e:
             print(e)
             lbl_register_text.config(text="Username or email already in use", fg='red')
