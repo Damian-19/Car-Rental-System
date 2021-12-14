@@ -29,7 +29,8 @@ def insert_row(con, table, row):
         elif 'bookings' in table:
             sql = "INSERT INTO " + table + "(userId,city,vehicleType, startDate, endDate) VALUES(?,?,?,?,?) "
         elif 'users' in table:
-            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, points, salt, hashedPassword) VALUES(?,?,?,?,?,?,?,?)"
+            sql = "INSERT INTO " + table + "(username, firstName, lastName, email, phoneNumber, points, salt, " \
+                                           "hashedPassword) VALUES(?,?,?,?,?,?,?,?) "
 
         ex = con.cursor()
         ex.execute(sql, row)
@@ -94,7 +95,7 @@ def main():
 
     row = ('cork', 'Cork', 'University College Cork, Cork City')
     insert_row(con, "locations", row)
-    row = ('limerick', 'Limerick', 'University of Limerick, Casletroy')
+    row = ('limerick', 'Limerick', 'University of Limerick, Castletroy')
     insert_row(con, "locations", row)
     row = ('dublin', 'Dublin', 'University College Dublin, Dublin City')
     insert_row(con, "locations", row)
