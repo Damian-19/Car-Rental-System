@@ -46,22 +46,17 @@ def create_dashboard():
 def bookings_tab():
     con = sqlite3.connect(r"../../sqlite/db/database.db")
     new_cursor = con.cursor()
-    new_cursor.execute("SELECT city, vehicleType, startDate, endDate FROM bookings WHERE userid = ?",
+    new_cursor.execute("SELECT startDate, endDate FROM bookings WHERE userid = ?",
                        (db.get_userid(),))
     result = new_cursor.fetchall()
-    print(len(result))
-    i = 1
+    result = list(result[0])
+    result[0] = result[0].replace("-", "/")
+    result[1] = result[1].replace("-", "/")
 
     if len(result) > 0:
-        tk.Label(gv.booking_frame, text="Location").grid(row=0, column=0)
-        tk.Label(gv.booking_frame, text="Vehicle Type").grid(row=0, column=1)
-        tk.Label(gv.booking_frame, text="Rent Date").grid(row=0, column=2)
-        tk.Label(gv.booking_frame, text="Return Date").grid(row=0, column=3)
-        for e in result:
-            for j in range(len(e)):
-                box = tk.Entry(gv.booking_frame, justify='center')
-                box.grid(row=i, column=j)
-                box.insert(tk.END, e[j])
+        tk.Label(gv.booking_frame, text="Current Bookings").grid(row=0, column=0)
+        tk.Label(gv.booking_frame, text=f"  {result[0]} - {result[1]}").grid(row=2, column=0)
+
     else:
         tk.Label(gv.booking_frame, text="You have no vehicles currently on loan").grid(row=1, column=0)
 
@@ -121,7 +116,7 @@ def rent_tab():
 
 def rent_car(location, vehicle, startdate, enddate):
     data = gv.rent_data
-    if location == "" or location == "Select Location" or  vehicle == "" or vehicle == "Select Vehicle":
+    if location == "" or location == "Select Location" or vehicle == "" or vehicle == "Select Vehicle":
         lbl_text = tk.Label(gv.rent_frame)
         lbl_text.grid(row=4, columnspan=2)
         lbl_text.config(text="")

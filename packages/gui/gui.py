@@ -170,7 +170,7 @@ lbl_text.grid(row=3, columnspan=2)
 
 button = tk.Button(login_frame, text="Login", command=login)
 button.grid(column=0, row=4, columnspan=2, sticky="we", padx=10, pady=10)
-login_frame.bind('<Return>', login())
+button.bind('<Return>', login)
 
 lbl_register_text = tk.Label(register_frame)
 lbl_register_text.grid(row=7, columnspan=2)

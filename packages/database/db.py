@@ -38,6 +38,18 @@ class DatabaseHandler:
         except Error as e:
             print(f"{Colour.RED} {Colour.BOLD} GET FIRSTNAME ERROR: {str(e)} {Colour.END}")
 
+    def get_booking_dates(self):
+        """
+        Retrieves firstname from database
+        """
+        con = sqlite3.connect(r"../../sqlite/db/database.db")
+        cursor = con.cursor()
+        try:
+            cursor.execute("SELECT startDate, endDate FROM " + self.table + " WHERE userid = ?", (self.data["userid"]))
+            return str(cursor.fetchone())
+        except Error as e:
+            print(f"{Colour.RED} {Colour.BOLD} GET FIRSTNAME ERROR: {str(e)} {Colour.END}")
+
     def check_bookings(self):
         """
         Retrieves number of bookings for user
