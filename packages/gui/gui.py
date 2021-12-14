@@ -71,10 +71,15 @@ password_label.grid(column=0, row=6, padx=10, pady=10)
 password_input = tk.Entry(register_frame, textvariable=gV.RPASSWORD, show="*")
 password_input.grid(column=1, row=6)
 
+# sign out function
+
 
 def signout():
     gV.home.destroy()
     gV.root.deiconify()
+
+# dashboard function which is called by dashboard file in order to create desired layout,
+# size and parts
 
 
 def dashboard():
@@ -89,7 +94,7 @@ def dashboard():
     y = (screen_height / 2) - (height / 2)
     gV.root.resizable(0, 0)
     gV.home.geometry("%dx%d+%d+%d" % (width, height, x, y))
-    # retrieve users firstname
+    # retrieve users firstname from database in order to display the name on the dashboard
     data = {
         "userid": db.get_userid()
     }
